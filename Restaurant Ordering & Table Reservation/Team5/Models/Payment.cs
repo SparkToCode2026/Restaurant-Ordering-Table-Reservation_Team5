@@ -1,8 +1,10 @@
-﻿namespace Team5.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Team5.Models
 {
     public class Payment
     {
-
+        [Key]
         public int PaymentId { get; set; }
         public decimal Amount { get; set; }
         public int PaymentMethod { get; set; }

@@ -1,4 +1,6 @@
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Team5
 {
     public class Program
@@ -8,6 +10,9 @@ namespace Team5
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            //DbContext
+            builder.Services.AddDbContext<ProjectContext>(options =>
+             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
 
