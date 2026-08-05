@@ -8,7 +8,7 @@ namespace Team5.Models
         [Key]
         public int IngredientId { get; set; }
 
-        public string Name { get; set; }
+        public string IngredientName { get; set; }
 
         public string UnitOfMeasure { get; set; }
 
