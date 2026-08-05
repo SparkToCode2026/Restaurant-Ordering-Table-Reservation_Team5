@@ -13,6 +13,9 @@ namespace Team5
         public DbSet<Order> Orders { get; set; }
         //Register the DbSet for the Table 
         public DbSet<Table> Tables { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuCategory> MenuCategories { get; set; }
+
         public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
         {
 
