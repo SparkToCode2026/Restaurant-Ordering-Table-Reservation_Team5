@@ -8,7 +8,8 @@ namespace Team5
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }
-
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuCategory> MenuCategories { get; set; }
 
         public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
         {
