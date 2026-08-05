@@ -1,4 +1,5 @@
 ﻿
+using RestaurantApi.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +9,7 @@ namespace Team5.Models
     {
         // Primary Key
         [Key]
-        public int Id { get; set; }
+        public int OrderId { get; set; }
 
         // Order Information
 
@@ -22,7 +23,7 @@ namespace Team5.Models
 
 
 
-        //////Relationships
+        //Relationships
 
 
 

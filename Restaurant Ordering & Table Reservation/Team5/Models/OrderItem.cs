@@ -1,5 +1,6 @@
-<<<<<<< HEAD
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Team5.Models;
 
 namespace RestaurantApi.Models;
 
@@ -20,15 +21,8 @@ namespace RestaurantApi.Models;
 /// </summary>
 public class OrderItem
 {
-    public int Id { get; set; }
-
-    // ---- FK: Order ----
-    public int OrderId { get; set; }
-    public Order? Order { get; set; }
-
-    // ---- FK: MenuItem ----
-    public int MenuItemId { get; set; }
-    public MenuItem? MenuItem { get; set; }
+    [Key]
+    public int OrderItemId { get; set; }    
 
     public int Quantity { get; set; }
 
@@ -37,11 +31,15 @@ public class OrderItem
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Subtotal { get; set; }
-=======
-﻿namespace Team5.Models
-{
-    public class OrderItem
-    {
-    }
->>>>>>> 4a30804116a8d144f3dcb88f0d0a9566e473d2c3
+
+    //Relationships
+    // One Order can contain many Order Items (Order 1 - M OrderItem)
+    [ForeignKey("Order")]
+    public int OrderId { get; set; }
+    public Order Order { get; set; }
+
+    // One Menu Item can appear in many Order Items (MenuItem 1 - M OrderItem)
+    [ForeignKey("MenuItem")]
+    public int MenuItemId { get; set; }
+    public MenuItem MenuItem { get; set; }
 }

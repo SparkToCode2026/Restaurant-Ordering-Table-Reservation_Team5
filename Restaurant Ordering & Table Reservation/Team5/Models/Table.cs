@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RestaurantApi.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Team5.Models
