@@ -5,7 +5,7 @@ namespace Team5.Models
     {
            public int  UserId { get; set; }
 
-            public string Name { get; set; }
+            public string UaerName { get; set; }
 
             public string Email { get; set; }
 
@@ -16,7 +16,11 @@ namespace Team5.Models
             public string PhoneNumber { get; set; }
 
             public DateTime CreatedAt { get; set; }
-        }
+
+       
     }
+}
+        
+    
 
 
