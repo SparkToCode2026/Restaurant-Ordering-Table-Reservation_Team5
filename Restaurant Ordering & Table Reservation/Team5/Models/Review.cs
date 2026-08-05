@@ -16,18 +16,18 @@ namespace Team5.Models
 
         // One User can write many Reviews (User 1 - M Review)
         [ForeignKey("User")] 
-        public int UserId { get; set; } 
-        public User User { get; set; }
+        public int? UserId { get; set; } 
+        public User? User { get; set; }
 
         // One Order can receive many Reviews (Order 1 - M Review)
         [ForeignKey("Order")]
-        public int OrderId { get; set; }
-        public Order Order { get; set; }
+        public int? OrderId { get; set; }
+        public Order? Order { get; set; }
 
         // One Menu Item can receive many Reviews (MenuItem 1 - M Review)
         [ForeignKey("MenuItem")]
-        public int MenuItemId { get; set; }
-        public MenuItem MenuItem { get; set; }
+        public int? MenuItemId { get; set; }
+        public MenuItem? MenuItem { get; set; }
 
     }
 }

@@ -1,19 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Team5.Models;
 
 namespace Team5.Models 
 { 
-
-/// <summary>
-/// Represents a customer's booking of a table for a given date/time and party size.
-/// Assigned model — EF Core Code task (Reservation).
-///
-/// Relationships:
-///   - Many-to-one with User      (the customer who made the booking)
-///   - Many-to-one with Table     (the table being reserved)
-/// Both FKs are required (non-nullable) because a reservation cannot exist
-/// without a customer and a table.
-/// </summary>
     public class Reservation
     {
         [Key]

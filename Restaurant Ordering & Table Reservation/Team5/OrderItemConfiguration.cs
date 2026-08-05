@@ -17,7 +17,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
     {
         builder.ToTable("OrderItems");
 
-        builder.HasKey(oi => oi.Id);
+        builder.HasKey(oi => oi.OrderItemId);
 
         builder.Property(oi => oi.Quantity).IsRequired();
 

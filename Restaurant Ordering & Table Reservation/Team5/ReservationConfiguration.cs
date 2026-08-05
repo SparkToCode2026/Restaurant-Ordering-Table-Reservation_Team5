@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RestaurantApi.Models;
+using Team5.Models;
 
 namespace RestaurantApi.Data.Configurations;
 
@@ -19,7 +20,7 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
     {
         builder.ToTable("Reservations");
 
-        builder.HasKey(r => r.Id);
+        builder.HasKey(r => r.ReservationId);
 
         builder.Property(r => r.ReservationDate).IsRequired();
         builder.Property(r => r.ReservationTime).IsRequired();
