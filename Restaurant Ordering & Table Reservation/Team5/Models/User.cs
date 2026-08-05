@@ -6,7 +6,6 @@ namespace Team5.Models
     {
         [Key]
         public int  UserId { get; set; }
-
         public string UserName { get; set; }
 
         public string UserEmail { get; set; }
@@ -35,7 +34,15 @@ namespace Team5.Models
         
 
 
+
     }
 }
 
+           
+
+       
+   
+
+        
+    
 
