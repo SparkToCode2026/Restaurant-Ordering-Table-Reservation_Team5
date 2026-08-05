@@ -9,7 +9,10 @@ namespace Team5
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
-
+        //Register the DbSet for the Order 
+        public DbSet<Order> Orders { get; set; }
+        //Register the DbSet for the Table 
+        public DbSet<Table> Tables { get; set; }
         public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
         {
 
