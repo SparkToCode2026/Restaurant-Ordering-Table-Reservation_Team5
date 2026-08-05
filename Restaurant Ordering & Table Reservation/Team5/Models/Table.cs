@@ -16,5 +16,16 @@ namespace Team5.Models
         public string Location { get; set; }
 
         public bool IsActive { get; set; }
+
+
+        ///////Relationships
+
+
+        // One Table can have many Reservations ( Table 1 - M Reservation)
+        public List<Reservation> Reservations { get; set; }
+
+
+        // One Table can have many Orders (Table 1 - M Order)
+        public List<Order> Orders { get; set; }
     }
 }
