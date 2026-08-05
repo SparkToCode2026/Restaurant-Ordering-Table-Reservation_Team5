@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RestaurantApi.Models;
@@ -36,4 +37,11 @@ public class OrderItem
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Subtotal { get; set; }
+=======
+﻿namespace Team5.Models
+{
+    public class OrderItem
+    {
+    }
+>>>>>>> 4a30804116a8d144f3dcb88f0d0a9566e473d2c3
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 namespace RestaurantApi.Models;
 
 /// <summary>
@@ -30,4 +31,11 @@ public class Reservation
     public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+=======
+﻿namespace Team5.Models
+{
+    public class Reservation
+    {
+    }
+>>>>>>> 4a30804116a8d144f3dcb88f0d0a9566e473d2c3
 }
