@@ -1,4 +1,7 @@
-﻿namespace Team5.Models
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Team5.Models
 {
     public class MenuItem
     {
@@ -8,5 +11,10 @@
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
         public bool IsAvailable { get; set; }
+
+        //Relationships
+        [ForeignKey("Category")]
+        public int MenuCategoryId { get; set; }
+        public MenuCategory Category { get; set; }
     }
 }
