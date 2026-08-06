@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Team5.Models
 {
     public class Payment
     {
         [Key]
+        [JsonIgnore]
         public int PaymentId { get; set; }
         public decimal Amount { get; set; }
         public int PaymentMethod { get; set; }
@@ -17,7 +19,8 @@ namespace Team5.Models
 
         //One Order can have many Payments (Order 1 - M Payment)
         [ForeignKey("Order")] 
-        public int OrderId { get; set; } 
+        public int OrderId { get; set; }
+        [JsonIgnore]
         public Order Order { get; set; }
 
     }

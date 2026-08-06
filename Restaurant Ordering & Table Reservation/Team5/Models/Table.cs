@@ -1,6 +1,7 @@
 ﻿using RestaurantApi.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Team5.Models
 {
@@ -8,6 +9,7 @@ namespace Team5.Models
     {
         // Primary Key
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         // Table Information
@@ -24,10 +26,12 @@ namespace Team5.Models
 
 
         // One Table can have many Reservations ( Table 1 - M Reservation)
+        [JsonIgnore]
         public List<Reservation> Reservations { get; set; }
 
 
         // One Table can have many Orders (Table 1 - M Order)
+        [JsonIgnore]
         public List<Order> Orders { get; set; }
     }
 }

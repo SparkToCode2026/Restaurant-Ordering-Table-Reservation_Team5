@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Team5.Models;
 
 namespace RestaurantApi.Models;
@@ -22,6 +23,7 @@ namespace RestaurantApi.Models;
 public class OrderItem
 {
     [Key]
+    [JsonIgnore]
     public int OrderItemId { get; set; }    
 
     public int Quantity { get; set; }
@@ -36,10 +38,12 @@ public class OrderItem
     // One Order can contain many Order Items (Order 1 - M OrderItem)
     [ForeignKey("Order")]
     public int OrderId { get; set; }
+    [JsonIgnore]
     public Order Order { get; set; }
 
     // One Menu Item can appear in many Order Items (MenuItem 1 - M OrderItem)
     [ForeignKey("MenuItem")]
     public int MenuItemId { get; set; }
+    [JsonIgnore]
     public MenuItem MenuItem { get; set; }
 }
