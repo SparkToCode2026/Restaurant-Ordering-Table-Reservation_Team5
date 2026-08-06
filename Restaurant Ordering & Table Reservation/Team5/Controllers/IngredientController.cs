@@ -56,7 +56,9 @@ namespace Team5.Controllers
             return Ok(ingredient);
         }
 
-        // Delete Ingredient
+
+
+        /// Delete Ingredient
         [HttpDelete("{id}")]
         public IActionResult DeleteIngredient(int id)
         {
