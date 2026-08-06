@@ -14,7 +14,6 @@ namespace Team5.Controllers
             _context = context;
         }
 
-        // Get All Users
         [HttpGet]
         public IActionResult GetUsers()
         {
@@ -69,6 +68,35 @@ namespace Team5.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        // Search User By Name
+        [HttpGet("search/{name}")]
+        public IActionResult SearchUsers(string name)
+        {
+            var users = _context.Users
+                .Where(u => u.UserName.Contains(name))
+                .ToList();
+
+            return Ok(users);
+        }
+
+        // Sort Users
+        [HttpGet("sort")]
+        public IActionResult SortUsers()
+        {
+            var users = _context.Users
+                .OrderBy(u => u.UserName)
+                .ToList();
+
+            return Ok(users);
+        }
+
+        // Count Users
+        [HttpGet("count")]
+        public IActionResult CountUsers()
+        {
+            return Ok(_context.Users.Count());
         }
     }
 }

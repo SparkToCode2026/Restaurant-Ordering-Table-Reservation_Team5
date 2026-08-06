@@ -56,9 +56,7 @@ namespace Team5.Controllers
             return Ok(ingredient);
         }
 
-
-
-        /// Delete Ingredient
+        // Delete Ingredient
         [HttpDelete("{id}")]
         public IActionResult DeleteIngredient(int id)
         {
@@ -71,6 +69,35 @@ namespace Team5.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        // Search Ingredient By Name
+        [HttpGet("search/{name}")]
+        public IActionResult SearchIngredient(string name)
+        {
+            var ingredients = _context.Ingredients
+                .Where(i => i.IngredientName.Contains(name))
+                .ToList();
+
+            return Ok(ingredients);
+        }
+
+        // Sort Ingredients
+        [HttpGet("sort")]
+        public IActionResult SortIngredients()
+        {
+            var ingredients = _context.Ingredients
+                .OrderBy(i => i.IngredientName)
+                .ToList();
+
+            return Ok(ingredients);
+        }
+
+        // Count Ingredients
+        [HttpGet("count")]
+        public IActionResult CountIngredients()
+        {
+            return Ok(_context.Ingredients.Count());
         }
     }
 }
