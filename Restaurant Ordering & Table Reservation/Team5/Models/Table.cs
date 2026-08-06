@@ -8,7 +8,7 @@ namespace Team5.Models
     {
         // Primary Key
         [Key]
-        public int Id { get; set; }
+        public int TableId { get; set; }
 
         // Table Information
         public string TableNumber { get; set; }
