@@ -67,6 +67,22 @@ namespace Team5.Controllers
             return Ok("Order Status Updated Successfully");
         }
 
+        // 4. DELETE - Remove an Order
+        [HttpDelete("RemoveOrder")]
+        public IActionResult RemoveOrder(int id)
+        {
+            Order order = context.Orders.FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            context.Orders.Remove(order);
+            context.SaveChanges();
+
+            return Ok("Order Removed Successfully");
+        }
 
 
 
