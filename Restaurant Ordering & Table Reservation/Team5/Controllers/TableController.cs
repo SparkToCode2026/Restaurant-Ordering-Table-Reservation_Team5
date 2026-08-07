@@ -83,5 +83,18 @@ namespace Team5.Controllers
         }
 
 
+        // 5. GET - Get all Tables with related Orders and Reservations
+        [HttpGet("GetAllTables")]
+        public IActionResult GetAllTables()
+        {
+            List<Table> tables = context.Tables
+                .Include(t => t.Orders)
+                .Include(t => t.Reservations)
+                .ToList();
+
+            return Ok(tables);
+        }
+
+
     }
 }
