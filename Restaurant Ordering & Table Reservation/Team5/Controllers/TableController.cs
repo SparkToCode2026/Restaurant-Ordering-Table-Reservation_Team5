@@ -123,6 +123,16 @@ namespace Team5.Controllers
             return Ok(tables);
         }
 
+        // 8. GET - Sort Tables by Capacity
+        [HttpGet("SortTablesByCapacity")]
+        public IActionResult SortTablesByCapacity()
+        {
+            List<Table> tables = context.Tables
+                .OrderByDescending(t => t.Capacity)
+                .ToList();
+
+            return Ok(tables);
+        }
 
     }
 }
