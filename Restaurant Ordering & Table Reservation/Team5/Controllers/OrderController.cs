@@ -113,6 +113,17 @@ namespace Team5.Controllers
             return Ok(order);
         }
 
+        // 7. GET - Filter Orders by Status
+        [HttpGet("GetOrdersByStatus")]
+        public IActionResult GetOrdersByStatus(string status)
+        {
+            List<Order> orders = context.Orders
+                .Where(o => o.Status == status)
+                .ToList();
+
+            return Ok(orders);
+        }
+
 
     }
 }
