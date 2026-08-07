@@ -14,7 +14,7 @@ namespace Team5.Controllers
             context = _context;
         }
 
-        // Create OR add Menu Category
+        // 1. Create OR add Menu Category
         [HttpPost("CreateMenuCategory")]
         public IActionResult CreateMenuCategory(MenuCategory menuCategory)
         {
@@ -29,7 +29,7 @@ namespace Team5.Controllers
             return Ok(menuCategory);
         }
 
-        // Update Menu Category
+        // 2. Update Menu Category
         [HttpPut("UpdateMenuCategory/{id}")]
         public IActionResult UpdateMenuCategory(int id,MenuCategory menuCategory)
         {
@@ -47,7 +47,7 @@ namespace Team5.Controllers
             return NotFound("Menu Category not found.");
         }
 
-        // Update Menu Category Display Order
+        // 3. Update Menu Category Display Order
         [HttpPatch("UpdateMenuCategoryDisplayOrder/{id}")]
         public IActionResult UpdateMenuCategoryDisplayOrder(int id, int displayOrder)
         {
@@ -65,7 +65,7 @@ namespace Team5.Controllers
             }
         }
 
-        // Delete Menu Category
+        // 4. Delete Menu Category
         [HttpDelete("DeleteMenuCategory/{id}")]
         public IActionResult DeleteMenuCategory(int id)
         {
@@ -82,7 +82,7 @@ namespace Team5.Controllers
             }
         }
 
-        // Get All Menu Categories
+        // 5. Get All Menu Categories
         [HttpGet("GetAllMenuCategories")]
         public IActionResult GetAllMenuCategories()
         {
@@ -90,7 +90,7 @@ namespace Team5.Controllers
             return Ok(menuCategories);
         }
 
-        // Get Menu Category By Id
+        // 6. Get Menu Category By Id
         [HttpGet("GetMenuCategoryById/{id}")]
         public IActionResult GetMenuCategoryById(int id)
         {
@@ -105,7 +105,7 @@ namespace Team5.Controllers
             }
         }
 
-        // Get Menu Categories By Filter
+        // 7. Get Menu Categories By Filter
         [HttpGet("GetMenuCategoriesByFilter")]
         public IActionResult GetMenuCategoriesByFilter(string? name, int? displayOrder)
         {
@@ -122,7 +122,7 @@ namespace Team5.Controllers
             return Ok(filteredMenuCategories);
         }
 
-        // Get Menu Category Summary
+        // 8. Get Menu Category Summary
         [HttpGet("GetMenuCategorySummary")]
         public IActionResult GetMenuCategorySummary()
         {

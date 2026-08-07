@@ -15,7 +15,7 @@ namespace Team5.Controllers
             context = _context;
         }
 
-        // Create OR add Menu Item
+        // 1. Create OR add Menu Item
         [HttpPost("CreateMenuItem")]
         public IActionResult CreateMenuItem(MenuItem menuItem)
         {
@@ -30,7 +30,7 @@ namespace Team5.Controllers
             return Ok(menuItem);
         }
 
-        // Update Menu Item
+        // 2. Update Menu Item
         [HttpPut("UpdateMenuItem/{id}")]
         public IActionResult UpdateMenuItem(int id, MenuItem menuItem)
         {
@@ -55,7 +55,7 @@ namespace Team5.Controllers
             return Ok(existingMenuItem);
         }
 
-        // Update Menu Item Price
+        // 3. Update Menu Item Price
         [HttpPatch("UpdateMenuItemPrice/{id}")]
         public IActionResult UpdateMenuItemPrice(int id, [FromBody] decimal newPrice)
         {
@@ -70,7 +70,7 @@ namespace Team5.Controllers
             return Ok(existingMenuItem);
         }
 
-        // Delete Menu Item
+        // 4. Delete Menu Item
         [HttpDelete("DeleteMenuItem/{id}")]
         public IActionResult DeleteMenuItem(int id)
         {
@@ -84,7 +84,7 @@ namespace Team5.Controllers
             return Ok("Menu Item deleted successfully.");
         }
 
-        // Get all Menu Items.
+        // 5. Get all Menu Items.
         [HttpGet("GetAllMenuItems")]
         public IActionResult GetAllMenuItems()
         {
@@ -92,7 +92,7 @@ namespace Team5.Controllers
             return Ok(menuItems);
         }
 
-        // Get Menu Item by ID
+        // 6. Get Menu Item by ID
         [HttpGet("GetMenuItemById/{id}")]
         public IActionResult GetMenuItem(int id) 
         {
@@ -107,7 +107,7 @@ namespace Team5.Controllers
             }
         }
 
-        // Get Menu Items by Filter
+        // 7. Get Menu Items by Filter
         [HttpGet("GetMenuItemsByFilter")]
         public IActionResult GetMenuItemsByFilter(string? name, decimal? minPrice, decimal? maxPrice, int? categoryId)
         {
@@ -132,7 +132,7 @@ namespace Team5.Controllers
             return Ok(filteredMenuItems);
         }
 
-        // Get Menu Items Summary
+        // 8. Get Menu Items Summary
         [HttpGet("GetMenuItemsSummary")]
         public IActionResult GetMenuItemsSummary()
         {
