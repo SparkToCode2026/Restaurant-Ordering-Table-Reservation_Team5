@@ -91,5 +91,20 @@ namespace Team5.Controllers
             List<MenuItem> menuItems = context.MenuItems.Include(m => m.Category).ToList();
             return Ok(menuItems);
         }
+
+        // Get Menu Item by ID
+        [HttpGet("GetMenuItemById/{id}")]
+        public IActionResult GetMenuItem(int id) 
+        {
+            MenuItem menuItem = context.MenuItems.FirstOrDefault(m => m.MenuItemId == id);
+            if (menuItem != null)
+            {
+                return Ok(menuItem);
+            }
+            else
+            {
+                return NotFound("Menu Item not found.");
+            }
+        }
     }
 }
