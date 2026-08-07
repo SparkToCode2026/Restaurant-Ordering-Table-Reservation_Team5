@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Team5.Models;
 
 namespace Team5.Controllers
 {
@@ -6,13 +7,13 @@ namespace Team5.Controllers
     [ApiController]
     public class MenuCategoryController : ControllerBase
     {
-        private readonly ProjectContext _context;
+        private readonly ProjectContext context;
 
-        public MenuCategoryController(ProjectContext context)
+        public MenuCategoryController(ProjectContext _context)
         {
-            _context = context;
+            context = _context;
         }
 
-
+       
     }
 }
