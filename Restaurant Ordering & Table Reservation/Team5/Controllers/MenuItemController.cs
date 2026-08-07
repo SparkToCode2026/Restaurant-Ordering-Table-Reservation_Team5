@@ -84,7 +84,7 @@ namespace Team5.Controllers
             return Ok("Menu Item deleted successfully.");
         }
 
-        // Get all Menu Items
+        // Get all Menu Items.
         [HttpGet("GetAllMenuItems")]
         public IActionResult GetAllMenuItems()
         {
