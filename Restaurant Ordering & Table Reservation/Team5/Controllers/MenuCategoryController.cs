@@ -14,6 +14,21 @@ namespace Team5.Controllers
             context = _context;
         }
 
-       
+        // Create OR add Menu Category
+        [HttpPost("CreateMenuCategory")]
+        public IActionResult CreateMenuCategory(MenuCategory menuCategory)
+        {
+            // Check if the model data is valid according to validation attributes like [Required] and [StringLength]
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            context.MenuCategories.Add(menuCategory);
+            context.SaveChanges();
+            return Ok(menuCategory);
+        }
+
+
     }
 }
