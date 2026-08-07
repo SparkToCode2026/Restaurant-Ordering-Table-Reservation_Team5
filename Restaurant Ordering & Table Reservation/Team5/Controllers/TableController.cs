@@ -26,6 +26,27 @@ namespace Team5.Controllers
             return Ok(table.TableId);
         }
 
+        // 2. PUT - Update the Table
+        [HttpPut("UpdateTable")]
+        public IActionResult UpdateTable(int id, Table newTable)
+        {
+            Table table = context.Tables.FirstOrDefault(t => t.TableId == id);
+
+            if (table == null)
+            {
+                return NotFound("Table Not Found");
+            }
+
+            table.TableNumber = newTable.TableNumber;
+            table.Capacity = newTable.Capacity;
+            table.Location = newTable.Location;
+            table.IsActive = newTable.IsActive;
+
+            context.SaveChanges();
+
+            return Ok("Table Updated Successfully");
+        }
+
 
 
     }
