@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Team5.Models;
 
 namespace Team5.Controllers
@@ -81,6 +82,14 @@ namespace Team5.Controllers
             context.MenuItems.Remove(existingMenuItem);
             context.SaveChanges();
             return Ok("Menu Item deleted successfully.");
+        }
+
+        // Get all Menu Items
+        [HttpGet("GetAllMenuItems")]
+        public IActionResult GetAllMenuItems()
+        {
+            List<MenuItem> menuItems = context.MenuItems.Include(m => m.Category).ToList();
+            return Ok(menuItems);
         }
     }
 }
