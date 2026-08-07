@@ -96,6 +96,23 @@ namespace Team5.Controllers
             return Ok(orders);
         }
 
+        // 6. GET - Get one Order by ID
+        [HttpGet("GetOrder")]
+        public IActionResult GetOrder(int id)
+        {
+            Order order = context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Table)
+                .FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            return Ok(order);
+        }
+
 
     }
 }
