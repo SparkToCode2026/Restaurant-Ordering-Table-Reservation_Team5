@@ -124,6 +124,16 @@ namespace Team5.Controllers
             return Ok(orders);
         }
 
+        // 8. GET - Sort Orders by Total Amount
+        [HttpGet("SortOrdersByAmount")]
+        public IActionResult SortOrdersByAmount()
+        {
+            List<Order> orders = context.Orders
+                .OrderByDescending(o => o.TotalAmount)
+                .ToList();
+
+            return Ok(orders);
+        }
 
     }
 }
