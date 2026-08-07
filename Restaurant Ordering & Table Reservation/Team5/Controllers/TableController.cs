@@ -95,6 +95,23 @@ namespace Team5.Controllers
             return Ok(tables);
         }
 
+        // 6. GET - Get one Table by ID
+        [HttpGet("GetTable")]
+        public IActionResult GetTable(int id)
+        {
+            Table table = context.Tables
+                .Include(t => t.Orders)
+                .Include(t => t.Reservations)
+                .FirstOrDefault(t => t.TableId == id);
+
+            if (table == null)
+            {
+                return NotFound("Table Not Found");
+            }
+
+            return Ok(table);
+        }
+
 
     }
 }
