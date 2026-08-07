@@ -10,9 +10,11 @@ namespace Team5.Models
         public int MenuCategoryId { get; set; }
 
         [Required]
+        [StringLength(50, MinimumLength = 2)]
         public string MenuCategoryName { get; set; }
 
         [Required]
+        [StringLength(200)]
         public string MenuCategoryDescription { get; set; }
 
         [Required]
