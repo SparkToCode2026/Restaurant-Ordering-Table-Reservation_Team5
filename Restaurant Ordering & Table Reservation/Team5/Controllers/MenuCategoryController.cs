@@ -89,5 +89,20 @@ namespace Team5.Controllers
             List<MenuCategory> menuCategories = context.MenuCategories.ToList();
             return Ok(menuCategories);
         }
+
+        // Get Menu Category By Id
+        [HttpGet("GetMenuCategoryById/{id}")]
+        public IActionResult GetMenuCategoryById(int id)
+        {
+            MenuCategory menuCategory = context.MenuCategories.FirstOrDefault(c => c.MenuCategoryId == id);
+            if (menuCategory != null)
+            {
+                return Ok(menuCategory);
+            }
+            else
+            {
+                return NotFound("Menu Category not found.");
+            }
+        }
     }
 }
