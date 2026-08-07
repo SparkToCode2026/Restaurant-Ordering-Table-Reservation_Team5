@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Team5.Models;
 
 namespace RestaurantApi.Models;
@@ -22,24 +23,30 @@ namespace RestaurantApi.Models;
 public class OrderItem
 {
     [Key]
-    public int OrderItemId { get; set; }    
+    [JsonIgnore]
+    public int OrderItemId { get; set; }
 
+    [Required]
     public int Quantity { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
+    [Required]
     public decimal UnitPrice { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
+    [Required]
     public decimal Subtotal { get; set; }
 
     //Relationships
     // One Order can contain many Order Items (Order 1 - M OrderItem)
     [ForeignKey("Order")]
     public int OrderId { get; set; }
+    [JsonIgnore]
     public Order Order { get; set; }
 
     // One Menu Item can appear in many Order Items (MenuItem 1 - M OrderItem)
     [ForeignKey("MenuItem")]
     public int MenuItemId { get; set; }
+    [JsonIgnore]
     public MenuItem MenuItem { get; set; }
 }
