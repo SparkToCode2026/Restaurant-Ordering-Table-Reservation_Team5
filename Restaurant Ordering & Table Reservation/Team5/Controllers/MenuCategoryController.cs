@@ -81,5 +81,13 @@ namespace Team5.Controllers
                 return NotFound("Menu Category not found.");
             }
         }
+
+        // Get All Menu Categories
+        [HttpGet("GetAllMenuCategories")]
+        public IActionResult GetAllMenuCategories()
+        {
+            List<MenuCategory> menuCategories = context.MenuCategories.ToList();
+            return Ok(menuCategories);
+        }
     }
 }
