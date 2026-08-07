@@ -104,5 +104,22 @@ namespace Team5.Controllers
                 return NotFound("Menu Category not found.");
             }
         }
+
+        // Get Menu Categories By Filter
+        [HttpGet("GetMenuCategoriesByFilter")]
+        public IActionResult GetMenuCategoriesByFilter(string? name, int? displayOrder)
+        {
+            var query = context.MenuCategories.AsQueryable();
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(c => c.MenuCategoryName.Contains(name));
+            }
+            if (displayOrder != null)
+            {
+                query = query.Where(c => c.DisplayOrder == displayOrder);
+            }
+            List<MenuCategory> filteredMenuCategories = query.ToList();
+            return Ok(filteredMenuCategories);
+        }
     }
 }
