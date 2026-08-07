@@ -53,5 +53,20 @@ namespace Team5.Controllers
             context.SaveChanges();
             return Ok(existingMenuItem);
         }
+
+        // Update Menu Item Price
+        [HttpPatch("UpdateMenuItemPrice/{id}")]
+        public IActionResult UpdateMenuItemPrice(int id, [FromBody] decimal newPrice)
+        {
+            MenuItem existingMenuItem = context.MenuItems.FirstOrDefault(m => m.MenuItemId == id);
+            if (existingMenuItem == null)
+            {
+                return NotFound("Menu Item not found.");
+            }
+
+            existingMenuItem.Price = newPrice;
+            context.SaveChanges();
+            return Ok(existingMenuItem);
+        }
     }
 }
