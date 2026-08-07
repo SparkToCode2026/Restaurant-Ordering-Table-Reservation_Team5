@@ -84,6 +84,17 @@ namespace Team5.Controllers
             return Ok("Order Removed Successfully");
         }
 
+        // 5. GET - Get all Orders with related User and Table
+        [HttpGet("GetAllOrders")]
+        public IActionResult GetAllOrders()
+        {
+            List<Order> orders = context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Table)
+                .ToList();
+
+            return Ok(orders);
+        }
 
 
     }
