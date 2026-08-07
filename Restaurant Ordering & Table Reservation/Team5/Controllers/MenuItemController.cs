@@ -106,5 +106,30 @@ namespace Team5.Controllers
                 return NotFound("Menu Item not found.");
             }
         }
+
+        // Get Menu Items by Filter
+        [HttpGet("GetMenuItemsByFilter")]
+        public IActionResult GetMenuItemsByFilter(string? name, decimal? minPrice, decimal? maxPrice, int? categoryId)
+        {
+            var query = context.MenuItems.AsQueryable();
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(m => m.MenuItemName.Contains(name));
+            }
+            if (minPrice.HasValue)
+            {
+                query = query.Where(m => m.Price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(m => m.Price <= maxPrice.Value);
+            }
+            if (categoryId.HasValue)
+            {
+                query = query.Where(m => m.MenuCategoryId == categoryId.Value);
+            }
+            List<MenuItem> filteredMenuItems = query.ToList();
+            return Ok(filteredMenuItems);
+        }
     }
 }
