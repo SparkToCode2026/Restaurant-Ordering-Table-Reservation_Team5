@@ -131,5 +131,22 @@ namespace Team5.Controllers
             List<MenuItem> filteredMenuItems = query.ToList();
             return Ok(filteredMenuItems);
         }
+
+        // Get Menu Items Summary
+        [HttpGet("GetMenuItemsSummary")]
+        public IActionResult GetMenuItemsSummary()
+        {
+            var summary = context.MenuItems
+                .OrderByDescending(m => m.Price)
+                .Select(m => new
+                {
+                    m.MenuItemId,
+                    m.MenuItemName,
+                    m.Price,
+                    ItemCount = context.MenuItems.Count()
+                })
+                .ToList();
+            return Ok(summary);
+        }
     }
 }
