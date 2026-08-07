@@ -29,6 +29,24 @@ namespace Team5.Controllers
             return Ok(menuCategory);
         }
 
+        // Update Menu Category
+        [HttpPut("UpdateMenuCategory/{id}")]
+        public IActionResult UpdateMenuCategory(int id,MenuCategory menuCategory)
+        {
+            if (id != menuCategory.MenuCategoryId)
+            {
+                return BadRequest("Menu Category ID mismatch.");
+            }
+            var existingMenuCategory = context.MenuCategories.Find(id);
+            if (existingMenuCategory != null)
+            {
+                context.MenuCategories.Update(menuCategory);
+                context.SaveChanges();
+                return Ok(menuCategory);
+            }
+            return NotFound("Menu Category not found.");
+        }
+
 
     }
 }
