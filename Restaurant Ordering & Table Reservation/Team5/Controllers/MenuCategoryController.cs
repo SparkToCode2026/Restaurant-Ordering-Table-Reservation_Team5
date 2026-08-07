@@ -121,5 +121,23 @@ namespace Team5.Controllers
             List<MenuCategory> filteredMenuCategories = query.ToList();
             return Ok(filteredMenuCategories);
         }
+
+        // Get Menu Category Summary
+        [HttpGet("GetMenuCategorySummary")]
+        public IActionResult GetMenuCategorySummary()
+        {
+            var summary = context.MenuCategories
+                .OrderBy(c => c.DisplayOrder) // Order from lowest to highest display order
+                .Select(c => new
+                {
+                    c.MenuCategoryId,
+                    c.MenuCategoryName,
+                    c.DisplayOrder,
+                    MenuItemCount = c.MenuItems.Count()
+                })
+                .ToList();
+
+            return Ok(summary);
+        }
     }
 }
