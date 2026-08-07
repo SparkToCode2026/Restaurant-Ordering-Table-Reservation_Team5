@@ -47,6 +47,24 @@ namespace Team5.Controllers
             return Ok("Table Updated Successfully");
         }
 
+        // 3. PATCH - Update Table Status
+        [HttpPatch("UpdateTableStatus")]
+        public IActionResult UpdateTableStatus(int id, bool status)
+        {
+            Table table = context.Tables.FirstOrDefault(t => t.TableId == id);
+
+            if (table == null)
+            {
+                return NotFound("Table Not Found");
+            }
+
+            table.IsActive = status;
+
+            context.SaveChanges();
+
+            return Ok("Table Status Updated Successfully");
+        }
+
 
 
     }
