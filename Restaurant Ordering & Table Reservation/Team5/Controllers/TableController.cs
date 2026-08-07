@@ -65,6 +65,22 @@ namespace Team5.Controllers
             return Ok("Table Status Updated Successfully");
         }
 
+        // 4. DELETE - Remove a Table
+        [HttpDelete("RemoveTable")]
+        public IActionResult RemoveTable(int id)
+        {
+            Table table = context.Tables.FirstOrDefault(t => t.TableId == id);
+
+            if (table == null)
+            {
+                return NotFound("Table Not Found");
+            }
+
+            context.Tables.Remove(table);
+            context.SaveChanges();
+
+            return Ok("Table Removed Successfully");
+        }
 
 
     }
