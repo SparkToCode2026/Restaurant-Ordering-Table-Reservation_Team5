@@ -28,5 +28,30 @@ namespace Team5.Controllers
             context.SaveChanges();
             return Ok(menuItem);
         }
+
+        // Update Menu Item
+        [HttpPut("UpdateMenuItem/{id}")]
+        public IActionResult UpdateMenuItem(int id, MenuItem menuItem)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var existingMenuItem = context.MenuItems.Find(id);
+            if (existingMenuItem == null)
+            {
+                return NotFound("Menu Item not found.");
+            }
+
+            existingMenuItem.MenuItemName = menuItem.MenuItemName;
+            existingMenuItem.MenuItemDescription = menuItem.MenuItemDescription;
+            existingMenuItem.Price = menuItem.Price;
+            existingMenuItem.ImageUrl = menuItem.ImageUrl;
+            existingMenuItem.IsAvailable = menuItem.IsAvailable;
+            existingMenuItem.MenuCategoryId = menuItem.MenuCategoryId;
+
+            context.SaveChanges();
+            return Ok(existingMenuItem);
+        }
     }
 }
