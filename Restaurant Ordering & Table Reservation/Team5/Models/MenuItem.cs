@@ -9,7 +9,6 @@ namespace Team5.Models
     public class MenuItem
     {
         [Key]
-        [JsonIgnore]
         public int MenuItemId { get; set; }
 
         [Required]
@@ -19,12 +18,13 @@ namespace Team5.Models
         public string MenuItemDescription { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue)]
         public decimal Price { get; set; }
 
         [Required]
         public string ImageUrl { get; set; }
 
-        [Required]
+
         public bool IsAvailable { get; set; }
 
         //Relationships
@@ -32,7 +32,7 @@ namespace Team5.Models
         //One Menu Category can have many Menu Items (MenuCategory 1 - M MenuItem)
         [ForeignKey("Category")]
         public int MenuCategoryId { get; set; }
-        [JsonIgnore]
+
         public MenuCategory Category { get; set; }
 
         // One Menu Item can appear in many Order Items (MenuItem 1 - M OrderItem)
