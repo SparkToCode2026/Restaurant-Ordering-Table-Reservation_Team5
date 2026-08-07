@@ -10,6 +10,7 @@ namespace Team5.Models
         [JsonIgnore]
         public int MenuItemIngredientId { get; set; }
 
+        [Required]
         public decimal QuantityRequired { get; set; }
 
         //Relationships 

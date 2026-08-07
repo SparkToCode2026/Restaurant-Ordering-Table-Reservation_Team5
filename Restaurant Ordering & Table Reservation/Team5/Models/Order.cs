@@ -16,11 +16,19 @@ namespace Team5.Models
         // Order Information
 
         // DineIn or Takeaway
+
+        [Required]
         public string OrderType { get; set; }
 
         // Pending, Preparing, Ready
-        public string Status { get; set; }         
+
+        [Required]
+        public string Status { get; set; }
+
+        [Required]
         public DateTime OrderDate { get; set; }
+
+        [Required]
         public decimal TotalAmount { get; set; }
 
 

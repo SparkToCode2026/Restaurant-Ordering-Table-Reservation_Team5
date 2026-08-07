@@ -13,12 +13,16 @@ namespace Team5.Models
         public int Id { get; set; }
 
         // Table Information
+        [Required]
         public string TableNumber { get; set; }
 
+        [Required]
         public int Capacity { get; set; }
 
+        [Required]
         public string Location { get; set; }
 
+        [Required]
         public bool IsActive { get; set; }
 
 

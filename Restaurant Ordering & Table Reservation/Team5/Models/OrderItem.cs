@@ -24,14 +24,17 @@ public class OrderItem
 {
     [Key]
     [JsonIgnore]
-    public int OrderItemId { get; set; }    
+    public int OrderItemId { get; set; }
 
+    [Required]
     public int Quantity { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
+    [Required]
     public decimal UnitPrice { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
+    [Required]
     public decimal Subtotal { get; set; }
 
     //Relationships

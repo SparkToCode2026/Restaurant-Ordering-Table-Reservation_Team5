@@ -10,12 +10,16 @@ namespace Team5.Models
         [JsonIgnore]
         public int IngredientId { get; set; }
 
+        [Required]
         public string IngredientName { get; set; }
 
+        [Required]
         public string UnitOfMeasure { get; set; }
 
+        [Required]
         public decimal QuantityInStock { get; set; }
 
+        [Required]
         public decimal ReorderLevel { get; set; }
 
         //Relationships 

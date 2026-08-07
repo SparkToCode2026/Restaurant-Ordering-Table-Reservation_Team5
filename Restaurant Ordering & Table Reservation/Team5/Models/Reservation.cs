@@ -11,13 +11,20 @@ namespace Team5.Models
         [JsonIgnore]
         public int ReservationId { get; set; }
 
+        [Required]
         public DateOnly ReservationDate { get; set; }
+
+        [Required]
         public TimeOnly ReservationTime { get; set; }
+
+        [Required]
         public int PartySize { get; set; }
 
         // Lifecycle: Pending, Confirmed, Completed, Cancelled at any point
+        [Required]
         public string Status { get; set; }
 
+        [Required]
         public DateTime CreatedAt { get; set; }
 
         //Relationships 

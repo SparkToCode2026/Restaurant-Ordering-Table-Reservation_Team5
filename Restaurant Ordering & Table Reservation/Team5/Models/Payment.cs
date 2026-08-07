@@ -9,10 +9,20 @@ namespace Team5.Models
         [Key]
         [JsonIgnore]
         public int PaymentId { get; set; }
+
+        [Required]
         public decimal Amount { get; set; }
+
+        [Required]
         public int PaymentMethod { get; set; }
+
+        [Required]
         public string PaymentStatus { get; set; }
+
+        [Required]
         public DateTime PaymentDate { get; set; }
+
+        [Required]
         public string TransactionRef { get; set; }
 
         //Relationships

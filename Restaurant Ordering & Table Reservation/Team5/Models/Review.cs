@@ -10,8 +10,14 @@ namespace Team5.Models
         [Key]
         [JsonIgnore]
         public int ReviewId { get; set; }
+
+        [Required]
         public int Rating { get; set; }
+
+        [Required]
         public string Comment { get; set; }
+
+        [Required]
         public DateTime CreatedAt { get; set; }
 
         //Relationships

@@ -11,10 +11,20 @@ namespace Team5.Models
         [Key]
         [JsonIgnore]
         public int MenuItemId { get; set; }
+
+        [Required]
         public string MenuItemName { get; set; }
+
+        [Required]
         public string MenuItemDescription { get; set; }
+
+        [Required]
         public decimal Price { get; set; }
+
+        [Required]
         public string ImageUrl { get; set; }
+
+        [Required]
         public bool IsAvailable { get; set; }
 
         //Relationships

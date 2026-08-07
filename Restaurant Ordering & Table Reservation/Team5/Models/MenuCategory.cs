@@ -8,8 +8,14 @@ namespace Team5.Models
         [Key]
         [JsonIgnore]
         public int MenuCategoryId { get; set; }
+
+        [Required]
         public string MenuCategoryName { get; set; }
+
+        [Required]
         public string MenuCategoryDescription { get; set; }
+
+        [Required]
         public int DisplayOrder { get; set; }
 
         //Relationships
