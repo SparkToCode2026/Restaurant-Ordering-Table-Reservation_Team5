@@ -68,5 +68,19 @@ namespace Team5.Controllers
             context.SaveChanges();
             return Ok(existingMenuItem);
         }
+
+        // Delete Menu Item
+        [HttpDelete("DeleteMenuItem/{id}")]
+        public IActionResult DeleteMenuItem(int id)
+        {
+            MenuItem existingMenuItem = context.MenuItems.FirstOrDefault(m => m.MenuItemId == id);
+            if (existingMenuItem == null)
+            {
+                return NotFound("Menu Item not found.");
+            }
+            context.MenuItems.Remove(existingMenuItem);
+            context.SaveChanges();
+            return Ok("Menu Item deleted successfully.");
+        }
     }
 }
