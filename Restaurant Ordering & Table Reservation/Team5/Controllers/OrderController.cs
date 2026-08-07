@@ -49,6 +49,23 @@ namespace Team5.Controllers
             return Ok("Order Updated Successfully");
         }
 
+        // 3. PATCH - Update Order Status
+        [HttpPatch("UpdateOrderStatus")]
+        public IActionResult UpdateOrderStatus(int id, string status)
+        {
+            Order order = context.Orders.FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            order.Status = status;
+
+            context.SaveChanges();
+
+            return Ok("Order Status Updated Successfully");
+        }
 
 
 
