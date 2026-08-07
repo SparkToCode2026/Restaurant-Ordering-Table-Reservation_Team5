@@ -112,6 +112,17 @@ namespace Team5.Controllers
             return Ok(table);
         }
 
+        // 7. GET - Filter Tables by Capacity
+        [HttpGet("GetTablesByCapacity")]
+        public IActionResult GetTablesByCapacity(int capacity)
+        {
+            List<Table> tables = context.Tables
+                .Where(t => t.Capacity >= capacity)
+                .ToList();
+
+            return Ok(tables);
+        }
+
 
     }
 }
