@@ -47,6 +47,24 @@ namespace Team5.Controllers
             return NotFound("Menu Category not found.");
         }
 
+        // Update Menu Category Display Order
+        [HttpPatch("UpdateMenuCategoryDisplayOrder/{id}")]
+        public IActionResult UpdateMenuCategoryDisplayOrder(int id, int displayOrder)
+        {
+            MenuCategory existingMenuCategory = context.MenuCategories.FirstOrDefault(c => c.MenuCategoryId == id);
+            if (existingMenuCategory != null)
+            {
+                existingMenuCategory.DisplayOrder = displayOrder;
+                context.SaveChanges();
+                return Ok(existingMenuCategory);
+
+            }
+            else
+            {
+                return NotFound("Menu Category not found.");
+            }
+        }
+
 
     }
 }
