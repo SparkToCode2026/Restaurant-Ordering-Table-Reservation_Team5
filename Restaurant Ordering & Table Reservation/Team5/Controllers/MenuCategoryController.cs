@@ -65,6 +65,21 @@ namespace Team5.Controllers
             }
         }
 
-
+        // Delete Menu Category
+        [HttpDelete("DeleteMenuCategory/{id}")]
+        public IActionResult DeleteMenuCategory(int id)
+        {
+            MenuCategory existingMenuCategory = context.MenuCategories.FirstOrDefault(c => c.MenuCategoryId == id);
+            if (existingMenuCategory != null)
+            {
+                context.MenuCategories.Remove(existingMenuCategory);
+                context.SaveChanges();
+                return Ok("Menu Category deleted successfully.");
+            }
+            else
+            {
+                return NotFound("Menu Category not found.");
+            }
+        }
     }
 }
