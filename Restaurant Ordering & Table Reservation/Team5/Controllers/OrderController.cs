@@ -1,6 +1,139 @@
-﻿namespace Team5.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Team5.Models;
+
+namespace Team5.Controllers
 {
-    public class OrderController
+    [ApiController]
+    [Route("Order")]
+    public class OrderController : ControllerBase
     {
+        private ProjectContext context;
+
+        public OrderController(ProjectContext _context)
+        {
+            context = _context;
+        }
+
+
+        // 1. POST - Add a new Order
+        [HttpPost("AddOrder")]
+        public IActionResult AddOrder(Order order)
+        {
+            context.Orders.Add(order);
+            context.SaveChanges();
+
+            return Ok(order.OrderId);
+        }
+
+        // 2. PUT - Update the Order
+        [HttpPut("UpdateOrder")]
+        public IActionResult UpdateOrder(int id, Order newOrder)
+        {
+            Order order = context.Orders.FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            order.OrderType = newOrder.OrderType;
+            order.Status = newOrder.Status;
+            order.OrderDate = newOrder.OrderDate;
+            order.TotalAmount = newOrder.TotalAmount;
+            order.UserId = newOrder.UserId;
+            order.TableId = newOrder.TableId;
+
+            context.SaveChanges();
+
+            return Ok("Order Updated Successfully");
+        }
+
+        // 3. PATCH - Update Order Status
+        [HttpPatch("UpdateOrderStatus")]
+        public IActionResult UpdateOrderStatus(int id, string status)
+        {
+            Order order = context.Orders.FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            order.Status = status;
+
+            context.SaveChanges();
+
+            return Ok("Order Status Updated Successfully");
+        }
+
+        // 4. DELETE - Remove an Order
+        [HttpDelete("RemoveOrder")]
+        public IActionResult RemoveOrder(int id)
+        {
+            Order order = context.Orders.FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            context.Orders.Remove(order);
+            context.SaveChanges();
+
+            return Ok("Order Removed Successfully");
+        }
+
+        // 5. GET - Get all Orders with related User and Table
+        [HttpGet("GetAllOrders")]
+        public IActionResult GetAllOrders()
+        {
+            List<Order> orders = context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Table)
+                .ToList();
+
+            return Ok(orders);
+        }
+
+        // 6. GET - Get one Order by ID
+        [HttpGet("GetOrder")]
+        public IActionResult GetOrder(int id)
+        {
+            Order order = context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Table)
+                .FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound("Order Not Found");
+            }
+
+            return Ok(order);
+        }
+
+        // 7. GET - Filter Orders by Status
+        [HttpGet("GetOrdersByStatus")]
+        public IActionResult GetOrdersByStatus(string status)
+        {
+            List<Order> orders = context.Orders
+                .Where(o => o.Status == status)
+                .ToList();
+
+            return Ok(orders);
+        }
+
+        // 8. GET - Sort Orders by Total Amount
+        [HttpGet("SortOrdersByAmount")]
+        public IActionResult SortOrdersByAmount()
+        {
+            List<Order> orders = context.Orders
+                .OrderByDescending(o => o.TotalAmount)
+                .ToList();
+
+            return Ok(orders);
+        }
+
     }
 }
