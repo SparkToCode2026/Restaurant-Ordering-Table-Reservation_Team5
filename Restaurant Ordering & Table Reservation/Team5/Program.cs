@@ -1,6 +1,11 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using Team5;
+using Team5.Services;
 
 namespace Team5
 {
@@ -15,7 +20,59 @@ namespace Team5
             builder.Services.AddDbContext<ProjectContext>(options =>
              options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             ////////////////
+            ///
             builder.Services.AddControllers();
+
+            // =====================================
+            // JWT Authentication
+            // =====================================
+            
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(
+                            builder.Configuration["Jwt:Key"]!
+                        )
+                    )
+                };
+            });
+            
+
+            // =====================================
+            // Authorization
+            // =====================================
+
+            builder.Services.AddAuthorization();
+
+
+            // =====================================
+            // Email Service
+            // =====================================
+
+            builder.Services.AddScoped<EmailService, EmailService>();
+
+
+            // =====================================
+            // Swagger
+            // =====================================
 
             //swagger
             builder.Services.AddEndpointsApiExplorer();

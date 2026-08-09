@@ -1,106 +1,103 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Team5.Models;
 
 namespace Team5.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class PaymentController : ControllerBase
     {
-        private ProjectContext context;
+        private readonly ProjectContext _context;
 
-        public PaymentController(ProjectContext _context)
+        public PaymentController(ProjectContext context)
         {
-            context = _context;
+            _context = context;
         }
 
-
-        // 1. POST
-        [HttpPost]
-        public void AddPayment(Payment p)
-        {
-            context.Payments.Add(p);
-            context.SaveChanges();
-        }
-
-
-        // 2. PUT
-        [HttpPut("{id}")]
-        public void UpdatePayment(int id, Payment p)
-        {
-            Payment payment = context.Payments.FirstOrDefault(x => x.PaymentId == id);
-
-            if (payment != null)
-            {
-                payment.Amount = p.Amount;
-                payment.PaymentMethod = p.PaymentMethod;
-                payment.TransactionRef = p.TransactionRef;
-
-                context.SaveChanges();
-            }
-        }
-
-
-        // 3. PUT - Status
-        [HttpPut("status/{id}")]
-        public void ChangePaymentStatus(int id, string status)
-        {
-            Payment payment = context.Payments.FirstOrDefault(x => x.PaymentId == id);
-
-            if (payment != null)
-            {
-                payment.PaymentStatus = status;
-                context.SaveChanges();
-            }
-        }
-
-
-        // 4. DELETE
-        [HttpDelete("{id}")]
-        public void RemovePayment(int id)
-        {
-            Payment payment = context.Payments.FirstOrDefault(x => x.PaymentId == id);
-
-            if (payment != null)
-            {
-                context.Payments.Remove(payment);
-                context.SaveChanges();
-            }
-        }
-
-
-        // 5. GET ALL
+        // Get All Payments
         [HttpGet]
-        public List<Payment> GetALLPayments()
+        public IActionResult GetPayments()
         {
-            return context.Payments.Include(p => p.Order).ToList();
+            return Ok(_context.Payments.ToList());
         }
 
-
-        // 6. GET BY ID
+        // Get Payment By Id
         [HttpGet("{id}")]
-        public Payment GetPayment(int id)
+        public IActionResult GetPayment(int id)
         {
-            return context.Payments.Include(p => p.Order).FirstOrDefault(p => p.PaymentId == id);
+            var payment = _context.Payments.Find(id);
+
+            if (payment == null)
+                return NotFound();
+
+            return Ok(payment);
         }
 
-
-        // 7. FILTER
-        [HttpGet("filter")]
-        public List<Payment> FilterPayments(string status)
+        // Add Payment
+        [HttpPost]
+        public IActionResult AddPayment(Payment payment)
         {
-            return context.Payments.Where(p => p.PaymentStatus == status).ToList();
+            _context.Payments.Add(payment);
+            _context.SaveChanges();
+
+            return Ok(payment);
         }
 
+        // Update Payment
+        [HttpPut("{id}")]
+        public IActionResult UpdatePayment(int id, Payment payment)
+        {
+            if (id != payment.PaymentId)
+                return BadRequest();
 
-        // 8. SORT / AGGREGATE
+            _context.Payments.Update(payment);
+            _context.SaveChanges();
+
+            return Ok(payment);
+        }
+
+        // Delete Payment
+        [HttpDelete("{id}")]
+        public IActionResult DeletePayment(int id)
+        {
+            var payment = _context.Payments.Find(id);
+
+            if (payment == null)
+                return NotFound();
+
+            _context.Payments.Remove(payment);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        // Search Payment By Status
+        [HttpGet("search/{status}")]
+        public IActionResult SearchPayment(string status)
+        {
+            var payments = _context.Payments
+                .Where(p => p.PaymentStatus.Contains(status))
+                .ToList();
+
+            return Ok(payments);
+        }
+
+        // Sort Payments
         [HttpGet("sort")]
-        public List<Payment> SortPayments()
+        public IActionResult SortPayments()
         {
-            return context.Payments
+            var payments = _context.Payments
                 .OrderByDescending(p => p.Amount)
                 .ToList();
+
+            return Ok(payments);
+        }
+
+        // Count Payments
+        [HttpGet("count")]
+        public IActionResult CountPayments()
+        {
+            return Ok(_context.Payments.Count());
         }
     }
 }

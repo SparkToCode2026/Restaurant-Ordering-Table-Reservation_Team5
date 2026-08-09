@@ -27,8 +27,7 @@ namespace Team5.Controllers
         [HttpPut("{id}")]
         public void UpdateReview(int id, Review r)
         {
-            Review review = context.Reviews
-                .FirstOrDefault(x => x.ReviewId == id);
+            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
 
             if (review != null)
             {
@@ -43,8 +42,7 @@ namespace Team5.Controllers
         [HttpPut("rating/{id}")]
         public void ChangeRating(int id, int rating)
         {
-            Review review = context.Reviews
-                .FirstOrDefault(x => x.ReviewId == id);
+            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
 
             if (review != null)
             {
@@ -57,8 +55,7 @@ namespace Team5.Controllers
         [HttpDelete("{id}")]
         public void RemoveReview(int id)
         {
-            Review review = context.Reviews
-                .FirstOrDefault(x => x.ReviewId == id);
+            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
 
             if (review != null)
             {
@@ -71,40 +68,28 @@ namespace Team5.Controllers
         [HttpGet]
         public List<Review> GetALLReviews()
         {
-            return context.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Order)
-                .Include(r => r.MenuItem)
-                .ToList();
+            return context.Reviews.Include(r => r.User).Include(r => r.Order).Include(r => r.MenuItem).ToList();
         }
 
         // 6. Get Review by ID
         [HttpGet("{id}")]
         public Review GetReview(int id)
         {
-            return context.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Order)
-                .Include(r => r.MenuItem)
-                .FirstOrDefault(r => r.ReviewId == id);
+            return context.Reviews.Include(r => r.User).Include(r => r.Order).Include(r => r.MenuItem).FirstOrDefault(r => r.ReviewId == id);
         }
 
         // 7. Filter Reviews
         [HttpGet("filter")]
         public List<Review> FilterReviews(int rating)
         {
-            return context.Reviews
-                .Where(r => r.Rating >= rating)
-                .ToList();
+            return context.Reviews.Where(r => r.Rating >= rating).ToList();
         }
 
         // 8. Sort Reviews
         [HttpGet("sort")]
         public List<Review> SortReviews()
         {
-            return context.Reviews
-                .OrderByDescending(r => r.Rating)
-                .ToList();
+            return context.Reviews.OrderByDescending(r => r.Rating).ToList();
         }
     }
 }
