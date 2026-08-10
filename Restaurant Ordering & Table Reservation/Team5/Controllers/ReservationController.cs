@@ -30,6 +30,18 @@ namespace Team5.Controllers
             context.Reservations.Add(reservation);
             context.SaveChanges();
 
+            // Send confirmation email to the user
+            var user = context.Users.Find(reservation.UserId);
+            if (user != null)
+            {
+                emailService.SendEmail(
+                    user.UserEmail,
+                    user.UserName,
+                    "Reservation Confirmed",
+                    $"<h3>Hi {user.UserName},</h3><p>Your reservation on {reservation.ReservationDate} at {reservation.ReservationTime} for {reservation.PartySize} guests has been confirmed.</p>"
+                );
+            }
+
             return Ok(reservation);
         }
 
