@@ -1,0 +1,8 @@
+body{background:#f6f7fb}
+.auth-bg{background:linear-gradient(135deg,#171b22,#495057)}
+.auth-card{width:min(100%,520px);border-radius:1.25rem}
+.brand-mark{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:#212529;color:#fff;font-size:1.4rem}
+.hero{background:linear-gradient(120deg,#212529,#495057);box-shadow:0 12px 35px rgba(0,0,0,.12)}
+.card{border-radius:1rem}.table thead th{white-space:nowrap;background:#f1f3f5}
+.action-btns{white-space:nowrap}.json-box{background:#111827;color:#e5e7eb;padding:1rem;border-radius:.75rem;white-space:pre-wrap}
+.form-label{font-weight:600}

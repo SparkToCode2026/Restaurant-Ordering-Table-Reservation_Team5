@@ -23,10 +23,21 @@ namespace Team5
             ///
             builder.Services.AddControllers();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("FrontendPolicy", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             // =====================================
             // JWT Authentication
             // =====================================
-            
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme =
@@ -113,6 +124,8 @@ namespace Team5
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("FrontendPolicy");
 
             app.UseAuthorization();
 
