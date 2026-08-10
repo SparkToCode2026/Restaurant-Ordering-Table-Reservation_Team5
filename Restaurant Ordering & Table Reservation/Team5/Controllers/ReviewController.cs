@@ -8,88 +8,135 @@ namespace Team5.Controllers
     [Route("api/[controller]")]
     public class ReviewController : ControllerBase
     {
-        private ProjectContext context;
+        private readonly ProjectContext _context;
 
-        public ReviewController(ProjectContext _context)
+        public ReviewController(ProjectContext context)
         {
-            context = _context;
+            _context = context;
         }
 
-        // 1. Add Review
+        // 1. Create Review
         [HttpPost]
-        public void AddReview(Review r)
+        public IActionResult CreateReview(Review review)
         {
-            context.Reviews.Add(r);
-            context.SaveChanges();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _context.Reviews.Add(review);
+            _context.SaveChanges();
+
+            return Ok(review);
         }
 
         // 2. Update Review
         [HttpPut("{id}")]
-        public void UpdateReview(int id, Review r)
+        public IActionResult UpdateReview(int id, Review review)
         {
-            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
+            var existingReview = _context.Reviews.Find(id);
 
-            if (review != null)
-            {
-                review.Rating = r.Rating;
-                review.Comment = r.Comment;
+            if (existingReview == null)
+                return NotFound();
 
-                context.SaveChanges();
-            }
+            existingReview.Rating = review.Rating;
+            existingReview.Comment = review.Comment;
+
+            _context.SaveChanges();
+
+            return Ok(existingReview);
         }
 
-        // 3. Change Rating
-        [HttpPut("rating/{id}")]
-        public void ChangeRating(int id, int rating)
+        // 3. Update Rating
+        [HttpPatch("{id}/rating")]
+        public IActionResult UpdateRating(
+            int id,
+            [FromBody] int rating)
         {
-            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
+            var review = _context.Reviews.Find(id);
 
-            if (review != null)
-            {
-                review.Rating = rating;
-                context.SaveChanges();
-            }
+            if (review == null)
+                return NotFound();
+
+            review.Rating = rating;
+
+            _context.SaveChanges();
+
+            return Ok(review);
         }
 
         // 4. Delete Review
         [HttpDelete("{id}")]
-        public void RemoveReview(int id)
+        public IActionResult DeleteReview(int id)
         {
-            Review review = context.Reviews.FirstOrDefault(x => x.ReviewId == id);
+            var review = _context.Reviews.Find(id);
 
-            if (review != null)
-            {
-                context.Reviews.Remove(review);
-                context.SaveChanges();
-            }
+            if (review == null)
+                return NotFound();
+
+            _context.Reviews.Remove(review);
+            _context.SaveChanges();
+
+            return Ok("Review deleted successfully");
         }
 
         // 5. Get All Reviews
         [HttpGet]
-        public List<Review> GetALLReviews()
+        public IActionResult GetReviews()
         {
-            return context.Reviews.Include(r => r.User).Include(r => r.Order).Include(r => r.MenuItem).ToList();
+            var reviews = _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Order)
+                .Include(r => r.MenuItem)
+                .ToList();
+
+            return Ok(reviews);
         }
 
-        // 6. Get Review by ID
+        // 6. Get Review By Id
         [HttpGet("{id}")]
-        public Review GetReview(int id)
+        public IActionResult GetReview(int id)
         {
-            return context.Reviews.Include(r => r.User).Include(r => r.Order).Include(r => r.MenuItem).FirstOrDefault(r => r.ReviewId == id);
+            var review = _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Order)
+                .Include(r => r.MenuItem)
+                .FirstOrDefault(r => r.ReviewId == id);
+
+            if (review == null)
+                return NotFound();
+
+            return Ok(review);
         }
 
-        // 7. Filter Reviews
+        // 7. Filter Reviews By Rating
         [HttpGet("filter")]
-        public List<Review> FilterReviews(int rating)
+        public IActionResult FilterReviews(int rating)
         {
-            return context.Reviews.Where(r => r.Rating >= rating).ToList();
+            var reviews = _context.Reviews
+                .Where(r => r.Rating == rating)
+                .ToList();
+
+            return Ok(reviews);
         }
 
-        // 8. Sort Reviews
-        [HttpGet("sort")]
-        public List<Review> SortReviews()
+        // 8. Average Review Rating
+        [HttpGet("aggregate")]
+        public IActionResult ReviewAggregate()
         {
-            return context.Reviews.OrderByDescending(r => r.Rating).ToList();
+            var totalReviews = _context.Reviews.Count();
+
+            var averageRating = 0.0;
+
+            if (totalReviews > 0)
+            {
+                averageRating = _context.Reviews
+                    .Average(r => r.Rating);
+            }
+
+            return Ok(new
+            {
+                TotalReviews = totalReviews,
+                AverageRating = averageRating
+            });
         }
     }
 }
