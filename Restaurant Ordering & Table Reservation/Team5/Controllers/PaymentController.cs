@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Team5.Models;
+using Team5.Services;
 
 namespace Team5.Controllers
 {
@@ -9,10 +10,12 @@ namespace Team5.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly ProjectContext _context;
+        private readonly EmailService emailService;
 
-        public PaymentController(ProjectContext context)
+        public PaymentController(ProjectContext context, EmailService _emailService)
         {
             _context = context;
+            emailService = _emailService;
         }
 
         // 1. Add Payment
@@ -24,6 +27,21 @@ namespace Team5.Controllers
 
             _context.Payments.Add(payment);
             _context.SaveChanges();
+            // Send email notification to the user
+            var order = _context.Orders.Find(payment.OrderId);
+            if (order != null)
+            {
+                var user = _context.Users.Find(order.UserId);
+                if (user != null)
+                {
+                    emailService.SendEmail(
+                        user.UserEmail,
+                        user.UserName,
+                        "Order Receipt - Payment Confirmed",
+                        $"<h3>Hi {user.UserName},</h3><p>Your payment of {payment.Amount:C} for Order #{order.OrderId} has been confirmed.</p><p>Payment Method: {payment.PaymentMethod}</p><p>Transaction Ref: {payment.TransactionRef}</p><p>Date: {payment.PaymentDate}</p>"
+                    );
+                }
+            }
 
             return Ok(payment);
         }
