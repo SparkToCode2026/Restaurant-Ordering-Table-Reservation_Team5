@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Team5.Models;
+using Team5.Services;
 
 namespace Team5.Controllers
 {
@@ -9,10 +10,12 @@ namespace Team5.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly ProjectContext context;
+        private readonly EmailService emailService;
 
-        public ReservationController(ProjectContext _context)
+        public ReservationController(ProjectContext _context, EmailService _emailService)
         {
             context = _context;
+            emailService = _emailService;
         }
 
         // 1. Add Reservation
@@ -26,6 +29,18 @@ namespace Team5.Controllers
 
             context.Reservations.Add(reservation);
             context.SaveChanges();
+
+            // Send confirmation email to the user
+            var user = context.Users.Find(reservation.UserId);
+            if (user != null)
+            {
+                emailService.SendEmail(
+                    user.UserEmail,
+                    user.UserName,
+                    "Reservation Confirmed",
+                    $"<h3>Hi {user.UserName},</h3><p>Your reservation on {reservation.ReservationDate} at {reservation.ReservationTime} for {reservation.PartySize} guests has been confirmed.</p>"
+                );
+            }
 
             return Ok(reservation);
         }
