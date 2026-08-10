@@ -68,7 +68,7 @@ namespace Team5
             // =====================================
 
             builder.Services.AddScoped<EmailService, EmailService>();
-
+            // builder.Services.AddScoped<EmailService, EmailService>(); same as builder.Services.AddScoped<EmailService>();
 
             // =====================================
             // Swagger
