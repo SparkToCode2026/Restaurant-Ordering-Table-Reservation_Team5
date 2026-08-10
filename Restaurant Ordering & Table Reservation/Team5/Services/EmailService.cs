@@ -1,4 +1,5 @@
-﻿using MimeKit;
+﻿using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace Team5.Services
 {

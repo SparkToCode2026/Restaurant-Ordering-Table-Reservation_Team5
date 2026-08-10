@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Team5.Models;
+using Team5.Services;
 
 namespace Team5.Controllers
 {
@@ -9,10 +10,12 @@ namespace Team5.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly ProjectContext context;
+        private readonly EmailService emailService;
 
-        public ReservationController(ProjectContext _context)
+        public ReservationController(ProjectContext _context, EmailService _emailService)
         {
             context = _context;
+            emailService = _emailService;
         }
 
         // 1. Add Reservation
