@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="#E4002B" role="img" aria-label="spoons logo">
+  <g transform="rotate(0 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <g transform="rotate(60 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <g transform="rotate(120 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <g transform="rotate(180 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <g transform="rotate(240 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <g transform="rotate(300 100 100)"><ellipse cx="100" cy="30" rx="17" ry="23"/><path d="M96.5 46 L103.5 46 L105 72 Q100 76 95 72 Z"/></g>
+  <circle cx="100" cy="100" r="10"/>
+</svg>
