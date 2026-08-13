@@ -6,7 +6,6 @@ namespace Team5.Models
     public class MenuCategory
     {
         [Key]
-        [JsonIgnore]
         public int MenuCategoryId { get; set; }
 
         [Required]
