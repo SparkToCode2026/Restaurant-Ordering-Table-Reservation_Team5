@@ -23,7 +23,6 @@ namespace RestaurantApi.Models;
 public class OrderItem
 {
     [Key]
-    [JsonIgnore]
     public int OrderItemId { get; set; }
 
     [Required]

@@ -8,7 +8,6 @@ namespace Team5.Models
     public class Reservation
     {
         [Key]
-        [JsonIgnore]
         public int ReservationId { get; set; }
 
         [Required]
