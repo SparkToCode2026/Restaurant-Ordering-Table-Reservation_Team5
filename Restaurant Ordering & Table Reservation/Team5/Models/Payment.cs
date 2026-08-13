@@ -7,7 +7,6 @@ namespace Team5.Models
     public class Payment
     {
         [Key]
-        [JsonIgnore]
         public int PaymentId { get; set; }
 
         [Required]
@@ -28,7 +27,7 @@ namespace Team5.Models
         //Relationships
 
         //One Order can have many Payments (Order 1 - M Payment)
-        [ForeignKey("Order")] 
+        [ForeignKey("Order")]
         public int OrderId { get; set; }
         [JsonIgnore]
         public Order Order { get; set; }

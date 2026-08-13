@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +20,14 @@ namespace Team5
              options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             ////////////////
             ///
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options =>
+            {
+                // Navigation properties (e.g. MenuCategory.MenuItems) are non-nullable
+                // reference types, which ASP.NET Core would otherwise treat as implicitly
+                // [Required] during model validation. That would make it impossible to
+                // create/update an entity without also sending its related collections.
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            });
 
             builder.Services.AddCors(options =>
             {
@@ -65,7 +71,7 @@ namespace Team5
                     )
                 };
             });
-            
+
 
             // =====================================
             // Authorization
@@ -80,6 +86,9 @@ namespace Team5
 
             builder.Services.AddScoped<EmailService, EmailService>();
             // builder.Services.AddScoped<EmailService, EmailService>(); same as builder.Services.AddScoped<EmailService>();
+
+            // JWT token generator (required by AuthController)
+            builder.Services.AddScoped<JwtService>();
 
             // =====================================
             // Swagger
