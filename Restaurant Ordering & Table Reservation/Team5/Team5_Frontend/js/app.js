@@ -1,44 +1,134 @@
-const resources={
-users:{label:"Users",endpoint:"User",id:"UserId",fields:[["UserName","User name","text",1],["UserEmail","Email","email",1],["PasswordHash","Password hash","text",0],["Role","Role","select",1,["Customer","Staff","Admin"]],["PhoneNumber","Phone","text",1],["CreatedAt","Created at","datetime-local",1]],visible:["UserId","UserName","UserEmail","Role","PhoneNumber","CreatedAt"],filter:["UserName","UserEmail","Role"]},
-menuCategories:{label:"Menu Categories",endpoint:"MenuCategory",id:"MenuCategoryId",fields:[["Name","Name","text",1],["Description","Description","textarea",1],["DisplayOrder","Display order","number",1]],visible:["MenuCategoryId","Name","Description","DisplayOrder"],filter:["Name"]},
-menuItems:{label:"Menu Items",endpoint:"MenuItem",id:"MenuItemId",fields:[["Name","Name","text",1],["Description","Description","textarea",1],["Price","Price","number",1],["ImageUrl","Image URL","url",0],["IsAvailable","Available","checkbox",1],["MenuCategoryId","Category ID","number",1]],visible:["MenuItemId","Name","Price","IsAvailable","MenuCategoryId"],filter:["Name","MenuCategoryId"]},
-tables:{label:"Tables",endpoint:"Table",id:"Id",fields:[["TableNumber","Table number","text",1],["Capacity","Capacity","number",1],["Location","Location","text",1],["IsActive","Active","checkbox",1]],visible:["Id","TableNumber","Capacity","Location","IsActive"],filter:["TableNumber","Location"]},
-reservations:{label:"Reservations",endpoint:"Reservation",id:"ReservationId",fields:[["ReservationDate","Date","date",1],["ReservationTime","Time","time",1],["PartySize","Party size","number",1],["Status","Status","select",1,["Pending","Confirmed","Cancelled","Completed"]],["UserId","User ID","number",1],["TableId","Table ID","number",1]],visible:["ReservationId","ReservationDate","ReservationTime","PartySize","Status","UserId","TableId"],filter:["Status","ReservationDate","UserId"]},
-orders:{label:"Orders",endpoint:"Order",id:"OrderId",fields:[["OrderType","Order type","select",1,["DineIn","Takeaway"]],["Status","Status","select",1,["Pending","Preparing","Ready","Completed","Cancelled"]],["OrderDate","Order date","datetime-local",1],["TotalAmount","Total amount","number",1],["UserId","User ID","number",1],["TableId","Table ID","number",0]],visible:["OrderId","OrderType","Status","OrderDate","TotalAmount","UserId","TableId"],filter:["Status","OrderType","UserId"]},
-orderItems:{label:"Order Items",endpoint:"OrderItem",id:"OrderItemId",fields:[["Quantity","Quantity","number",1],["UnitPrice","Unit price","number",1],["Subtotal","Subtotal","number",1],["OrderId","Order ID","number",1],["MenuItemId","Menu item ID","number",1]],visible:["OrderItemId","Quantity","UnitPrice","Subtotal","OrderId","MenuItemId"],filter:["OrderId","MenuItemId"]},
-payments:{label:"Payments",endpoint:"Payment",id:"PaymentId",fields:[["Amount","Amount","number",1],["PaymentMethod","Payment method","select",1,["Cash","Card","Online"]],["PaymentStatus","Payment status","select",1,["Pending","Paid","Failed","Refunded"]],["PaymentDate","Payment date","datetime-local",1],["TransactionRef","Transaction ref","text",1],["OrderId","Order ID","number",1]],visible:["PaymentId","Amount","PaymentMethod","PaymentStatus","PaymentDate","TransactionRef","OrderId"],filter:["PaymentStatus","PaymentMethod","OrderId"]},
-ingredients:{label:"Ingredients",endpoint:"Ingredient",id:"IngredientId",fields:[["Name","Name","text",1],["UnitOfMeasure","Unit of measure","text",1],["QuantityInStock","Quantity in stock","number",1],["ReorderLevel","Reorder level","number",1]],visible:["IngredientId","Name","UnitOfMeasure","QuantityInStock","ReorderLevel"],filter:["Name","UnitOfMeasure"]},
-menuItemIngredients:{label:"Menu Item Ingredients",endpoint:"MenuItemIngredient",id:"MenuItemIngredientId",fields:[["QuantityRequired","Quantity required","number",1],["MenuItemId","Menu item ID","number",1],["IngredientId","Ingredient ID","number",1]],visible:["MenuItemIngredientId","QuantityRequired","MenuItemId","IngredientId"],filter:["MenuItemId","IngredientId"]},
-reviews:{label:"Reviews",endpoint:"Review",id:"ReviewId",fields:[["Rating","Rating (1-5)","number",1],["Comment","Comment","textarea",1],["CreatedAt","Created at","datetime-local",1],["UserId","User ID","number",1],["OrderId","Order ID","number",0],["MenuItemId","Menu item ID","number",0]],visible:["ReviewId","Rating","Comment","CreatedAt","UserId","OrderId","MenuItemId"],filter:["Rating","UserId","OrderId","MenuItemId"]}
-};
-let currentKey=null,rows=[],recordModal,detailModal;
+/* ============================================================
+   app.js  —  the ONE shared JavaScript file for the whole site.
 
-document.addEventListener("DOMContentLoaded",()=>{
- recordModal=new bootstrap.Modal("#recordModal");detailModal=new bootstrap.Modal("#detailModal");
- document.querySelectorAll("[data-auth-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-auth-tab]").forEach(x=>x.classList.remove("active"));b.classList.add("active");let l=b.dataset.authTab==="login";loginForm.classList.toggle("d-none",!l);registerForm.classList.toggle("d-none",l)});
- loginForm.onsubmit=login;registerForm.onsubmit=register;logoutBtn.onclick=()=>{API.clearSession();location.reload()};backDashboard.onclick=showDashboard;addBtn.onclick=()=>openForm();recordForm.onsubmit=saveRecord;filterBtn.onclick=filterRecords;sortBtn.onclick=sortRecords;countBtn.onclick=countRecords;
- API.token?showApp():showAuth();
+   You mostly write HTML. This file gives every page a few small
+   helpers so the little script at the bottom of each page stays
+   short:
+     • api(...)        -> talk to the backend (adds your login token)
+     • saveLogin / me  -> remember who is logged in
+     • requireLogin()  -> kick guests back to the login page
+     • Cart            -> the shopping cart
+     • esc(), money()  -> tiny formatting helpers
+   You rarely need to change this file.
+   ============================================================ */
+
+/* 1) Where is the backend?  Change the port if yours is different. */
+const API_BASE = "https://localhost:7095";
+
+/* 2) The address of every backend action we use.
+      (The controllers don't all follow the same pattern, so we
+       just list the real addresses here once.) */
+const EP = {
+  login:            "/api/Auth/login",
+  register:         "/api/Auth/register",
+  users:            "/api/User",
+  categories:       "/api/MenuCategory/GetAllMenuCategories",
+  categoryCreate:   "/api/MenuCategory/CreateMenuCategory",
+  categoryUpdate:   (id) => `/api/MenuCategory/UpdateMenuCategory/${id}`,
+  categoryDelete:   (id) => `/api/MenuCategory/DeleteMenuCategory/${id}`,
+  items:            "/api/MenuItem/GetAllMenuItems",
+  itemCreate:       "/api/MenuItem/CreateMenuItem",
+  itemUpdate:       (id) => `/api/MenuItem/UpdateMenuItem/${id}`,
+  itemDelete:       (id) => `/api/MenuItem/DeleteMenuItem/${id}`,
+  tables:           "/Table/GetAllTables",
+  tableCreate:      "/Table/AddTable",
+  tableUpdate:      (id) => `/Table/UpdateTable?id=${id}`,
+  tableDelete:      (id) => `/Table/RemoveTable?id=${id}`,
+  reservations:     "/api/Reservation",
+  reservationUpdate:(id) => `/api/Reservation/${id}`,
+  reservationStatus:(id, s) => `/api/Reservation/status/${id}?status=${s}`,
+  reservationDelete:(id) => `/api/Reservation/${id}`,
+  orders:           "/Order/GetAllOrders",
+  orderCreate:      "/Order/AddOrder",
+  orderStatus:      (id, s) => `/Order/UpdateOrderStatus?id=${id}&status=${s}`,
+  orderDelete:      (id) => `/Order/RemoveOrder?id=${id}`,
+  orderItems:       "/api/OrderItem",
+  orderItemsByOrder:(id) => `/api/OrderItem/filter?orderId=${id}`,
+  payments:         "/api/Payment",
+  paymentCreate:    "/api/Payment",
+  paymentDelete:    (id) => `/api/Payment/${id}`,
+  reviews:          "/api/Review",
+  reviewCreate:     "/api/Review",
+  reviewDelete:     (id) => `/api/Review/${id}`,
+  ingredients:      "/api/Ingredient",
+  ingredientUpdate: (id) => `/api/Ingredient/${id}`,
+  ingredientDelete: (id) => `/api/Ingredient/${id}`,
+};
+
+/* 3) Remember the logged-in user (kept in the browser). */
+function saveLogin(token, user) {
+  localStorage.setItem("spoons_token", token);
+  localStorage.setItem("spoons_user", JSON.stringify(user));
+}
+function me()       { try { return JSON.parse(localStorage.getItem("spoons_user")); } catch { return null; } }
+function token()    { return localStorage.getItem("spoons_token"); }
+function isLoggedIn(){ return !!token(); }
+function isAdmin()  { return me() && me().role === "Admin"; }
+function logout()   { localStorage.clear(); location.href = "login.html"; }
+
+/* 4) Guards — put these at the top of a page's script. */
+function requireLogin() { if (!isLoggedIn()) location.href = "login.html"; }
+function requireAdmin() { if (!isLoggedIn()) location.href = "login.html";
+                          else if (!isAdmin()) location.href = "index.html"; }
+
+/* 5) Talk to the backend. Returns the JSON the server sends back.
+      Example:  const dishes = await api("GET", EP.items); */
+async function api(method, path, body) {
+  const options = { method, headers: {} };
+  if (body !== undefined) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
+  }
+  if (token()) options.headers["Authorization"] = "Bearer " + token();
+
+  const res  = await fetch(API_BASE + path, options);
+  const text = await res.text();
+  let data; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (!res.ok) {
+    const msg = (data && (data.message || data.title)) || data || ("Error " + res.status);
+    throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+  }
+  return data;
+}
+
+/* 6) Tiny formatting helpers used inside HTML templates. */
+function esc(s)   { return String(s ?? "").replace(/[&<>"']/g, c =>
+                    ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+function money(n) { return "$" + (Number(n) || 0).toFixed(2); }
+
+/* 7) A coloured status label. Just returns a Bootstrap badge. */
+function badge(text) {
+  const t = String(text || "").toLowerCase();
+  let color = "secondary";
+  if (/(paid|confirmed|completed|ready|available|in stock)/.test(t)) color = "success";
+  else if (/(pending|preparing|reserved|low stock)/.test(t))        color = "warning";
+  else if (/(failed|cancelled|occupied|out of stock|inactive)/.test(t)) color = "danger";
+  else if (/refunded/.test(t)) color = "info";
+  return `<span class="badge text-bg-${color}">${esc(text)}</span>`;
+}
+
+/* 8) The shopping cart (saved in the browser). */
+const Cart = {
+  items() { try { return JSON.parse(localStorage.getItem("spoons_cart")) || []; } catch { return []; } },
+  save(list) { localStorage.setItem("spoons_cart", JSON.stringify(list)); },
+  add(id, name, price) {
+    const list = Cart.items();
+    const found = list.find(x => x.id === id);
+    if (found) found.qty++;
+    else list.push({ id, name, price, qty: 1 });
+    Cart.save(list);
+  },
+  setQty(id, qty) { const list = Cart.items(); const it = list.find(x => x.id === id);
+                    if (it) { it.qty = Math.max(1, qty); Cart.save(list); } },
+  remove(id) { Cart.save(Cart.items().filter(x => x.id !== id)); },
+  clear()    { localStorage.removeItem("spoons_cart"); },
+  count()    { return Cart.items().reduce((n, x) => n + x.qty, 0); },
+  total()    { return Cart.items().reduce((n, x) => n + x.qty * x.price, 0); },
+};
+
+/* 9) When any page loads, show the number of items on the "Cart" button
+      (only if that page has a element with id="cartCount"). */
+document.addEventListener("DOMContentLoaded", () => {
+  const badge = document.getElementById("cartCount");
+  if (badge) badge.textContent = Cart.count();
 });
-function showAuth(){authView.classList.remove("d-none");appView.classList.add("d-none")}
-function showApp(){authView.classList.add("d-none");appView.classList.remove("d-none");currentUser.textContent=API.user?`${API.user.userName||API.user.UserName||"User"} • ${API.user.role||API.user.Role||""}`:"";buildNav();buildQuickActions();loadStats();showDashboard()}
-function buildNav(){navLinks.innerHTML="";[["dashboard","Dashboard"],...Object.entries(resources).map(([k,r])=>[k,r.label])].forEach(([k,l])=>{let li=document.createElement("li"),a=document.createElement("a");li.className="nav-item";a.className="nav-link";a.href="#";a.textContent=l;a.onclick=e=>{e.preventDefault();k==="dashboard"?showDashboard():openResource(k)};li.appendChild(a);navLinks.appendChild(li)})}
-function buildQuickActions(){quickActions.innerHTML="";Object.entries(resources).forEach(([k,r])=>{let b=document.createElement("button");b.className="btn btn-outline-primary btn-sm";b.textContent=r.label;b.onclick=()=>openResource(k);quickActions.appendChild(b)})}
-async function loadStats(){stats.innerHTML="";for(const k of ["menuItems","reservations","orders","tables","payments","ingredients"]){let r=resources[k],n="—";try{let d=await API.get(`/api/${r.endpoint}`);n=Array.isArray(d)?d.length:(d?.data?.length??"—")}catch{}let c=document.createElement("div");c.className="col-6 col-lg-2";c.innerHTML=`<div class="card border-0 shadow-sm"><div class="card-body"><small>${r.label}</small><div class="fs-3 fw-bold">${n}</div></div></div>`;stats.appendChild(c)}}
-function showDashboard(){dashboardSection.classList.remove("d-none");resourceSection.classList.add("d-none");loadStats()}
-async function openResource(k){currentKey=k;let r=resources[k];dashboardSection.classList.add("d-none");resourceSection.classList.remove("d-none");resourceTitle.textContent=r.label;filterField.innerHTML="";(r.filter||[]).forEach(f=>filterField.add(new Option(f,f)));await loadResource()}
-async function loadResource(path){let r=resources[currentKey];try{let d=await API.get(path||`/api/${r.endpoint}`);rows=Array.isArray(d)?d:(d?.data||d?.items||[]);renderTable()}catch(e){toast(e.message,"danger");rows=[];renderTable()}}
-function renderTable(){let r=resources[currentKey];tableHead.innerHTML=`<tr>${r.visible.map(x=>`<th>${x}</th>`).join("")}<th>Actions</th></tr>`;tableBody.innerHTML="";emptyState.classList.toggle("d-none",rows.length>0);rows.forEach((x,i)=>{let tr=document.createElement("tr");tr.innerHTML=r.visible.map(f=>`<td>${fmt(x[f])}</td>`).join("")+`<td class="action-btns"><button class="btn btn-sm btn-outline-info me-1" onclick="viewRecord(${i})">View</button><button class="btn btn-sm btn-outline-primary me-1" onclick="editRecord(${i})">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(${i})">Delete</button></td>`;tableBody.appendChild(tr)})}
-function fmt(v){if(v==null)return"—";if(typeof v==="boolean")return v?"Yes":"No";if(typeof v==="object")return esc(JSON.stringify(v));return esc(String(v))}
-function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function openForm(row=null){let r=resources[currentKey];modalTitle.textContent=row?"Edit "+r.label:"Add "+r.label;formFields.innerHTML="";r.fields.forEach(([n,l,t,req,opt])=>{let c=document.createElement("div");c.className="mb-3";if(t==="checkbox")c.innerHTML=`<div class="form-check form-switch"><input class="form-check-input" id="f_${n}" type="checkbox" ${row?.[n]?"checked":""}><label class="form-check-label">${l}</label></div>`;else if(t==="textarea")c.innerHTML=`<label class="form-label">${l}</label><textarea class="form-control" id="f_${n}" ${req?"required":""}>${row?.[n]??""}</textarea>`;else if(t==="select")c.innerHTML=`<label class="form-label">${l}</label><select class="form-select" id="f_${n}" ${req?"required":""}><option value="">Select...</option>${opt.map(o=>`<option ${String(row?.[n]??"")===o?"selected":""}>${o}</option>`).join("")}</select>`;else{let v=row?.[n]??"";if(t==="datetime-local"&&v)v=String(v).slice(0,16);c.innerHTML=`<label class="form-label">${l}</label><input class="form-control" id="f_${n}" type="${t}" value="${esc(String(v))}" ${req?"required":""}>`}formFields.appendChild(c)});recordForm.dataset.id=row?.[r.id]??"";recordModal.show()}
-function formData(){let r=resources[currentKey],o={};r.fields.forEach(([n,,t])=>{let e=document.querySelector("#f_"+n);if(!e)return;o[n]=t==="checkbox"?e.checked:t==="number"?(e.value===""?null:Number(e.value)):e.value});return o}
-async function saveRecord(e){e.preventDefault();let r=resources[currentKey],id=recordForm.dataset.id;try{if(id)await API.put(`/api/${r.endpoint}/${id}`,formData());else await API.post(`/api/${r.endpoint}`,formData());recordModal.hide();toast("Saved successfully","success");await loadResource();loadStats()}catch(e){toast(e.message,"danger")}}
-function viewRecord(i){detailJson.textContent=JSON.stringify(rows[i],null,2);detailModal.show()}
-function editRecord(i){openForm(rows[i])}
-async function deleteRecord(i){let r=resources[currentKey],id=rows[i][r.id];if(!confirm(`Delete ${r.label} #${id}?`))return;try{await API.delete(`/api/${r.endpoint}/${id}`);toast("Deleted","success");await loadResource();loadStats()}catch(e){toast(e.message,"danger")}}
-async function filterRecords(){let r=resources[currentKey],f=filterField.value,v=searchInput.value.trim();if(!f||!v)return toast("Choose a field and value","warning");try{let d=await API.get(`/api/${r.endpoint}`);let a=Array.isArray(d)?d:(d?.data||[]);rows=a.filter(x=>String(x[f]??"").toLowerCase().includes(v.toLowerCase()));renderTable()}catch(e){toast(e.message,"danger")}}
-async function sortRecords(){let r=resources[currentKey];try{await loadResource(`/api/${r.endpoint}/sort`)}catch{rows.sort((a,b)=>String(a[r.visible[1]]??"").localeCompare(String(b[r.visible[1]]??"")));renderTable()}}
-async function countRecords(){let r=resources[currentKey];try{let d=await API.get(`/api/${r.endpoint}/count`);aggregateBox.innerHTML=`<span class="badge text-bg-dark">Count: ${esc(JSON.stringify(d))}</span>`}catch{aggregateBox.innerHTML=`<span class="badge text-bg-dark">Loaded: ${rows.length}</span>`}}
-async function login(e){e.preventDefault();try{let d=await API.post("/api/Auth/login",{userEmail:loginEmail.value,password:loginPassword.value});API.setSession(d.token,d.user);showApp();toast("Login successful","success")}catch(e){toast(e.message,"danger")}}
-async function register(e){e.preventDefault();try{let d=await API.post("/api/Auth/register",{userName:regName.value,userEmail:regEmail.value,password:regPassword.value,phoneNumber:regPhone.value,role:regRole.value});toast(d?.message||"Registration successful","success");document.querySelector('[data-auth-tab="login"]').click()}catch(e){toast(e.message,"danger")}}
-function toast(m,t="info"){let e=document.createElement("div");e.className=`toast text-bg-${t}`;e.innerHTML=`<div class="d-flex"><div class="toast-body">${esc(String(m))}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;toastArea.appendChild(e);let x=new bootstrap.Toast(e,{delay:4000});x.show();e.addEventListener("hidden.bs.toast",()=>e.remove())}
