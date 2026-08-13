@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -8,7 +7,6 @@ namespace Team5.Models
     public class Review
     {
         [Key]
-        [JsonIgnore]
         public int ReviewId { get; set; }
 
         [Required]
@@ -23,7 +21,7 @@ namespace Team5.Models
         //Relationships
 
         // One User can write many Reviews (User 1 - M Review)
-        [ForeignKey("User")] 
+        [ForeignKey("User")]
         public int? UserId { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
