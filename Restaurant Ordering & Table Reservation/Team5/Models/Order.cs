@@ -10,7 +10,7 @@ namespace Team5.Models
     {
         // Primary Key
         [Key]
-        [JsonIgnore]
+        
         public int OrderId { get; set; }
 
         // Order Information

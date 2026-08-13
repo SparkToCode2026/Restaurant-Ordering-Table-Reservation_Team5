@@ -9,7 +9,7 @@ namespace Team5.Models
     {
         // Primary Key
         [Key]
-        [JsonIgnore]
+        
         public int TableId { get; set; }
         
         // Table Information
