@@ -46,13 +46,20 @@ namespace Team5.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(int id, User user)
         {
-            if (id != user.UserId)
-                return BadRequest();
+            var existing = _context.Users.Find(id);
 
-            _context.Users.Update(user);
+            if (existing == null)
+                return NotFound();
+
+            // Copy editable fields only; keep the stored password hash and creation date.
+            existing.UserName = user.UserName;
+            existing.UserEmail = user.UserEmail;
+            existing.Role = user.Role;
+            existing.PhoneNumber = user.PhoneNumber;
+
             _context.SaveChanges();
 
-            return Ok(user);
+            return Ok(existing);
         }
 
         // Delete User
