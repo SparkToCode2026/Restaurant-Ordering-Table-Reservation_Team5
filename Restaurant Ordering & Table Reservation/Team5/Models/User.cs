@@ -5,8 +5,7 @@ namespace Team5.Models
     public class User
     {
         [Key]
-        [JsonIgnore]
-        public int  UserId { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public string UserName { get; set; }
@@ -14,7 +13,9 @@ namespace Team5.Models
         [Required]
         public string UserEmail { get; set; }
 
-        [Required]
+        // Not [Required] for input validation (it is never sent by clients — it's
+        // set server-side during registration). [JsonIgnore] keeps it out of responses.
+        [JsonIgnore]
         public string PasswordHash { get; set; }
 
         [Required]
@@ -40,20 +41,11 @@ namespace Team5.Models
 
         // One User can have many Reviews (User 1 - M Review)
         [JsonIgnore]
-        public List<Review> Reviews { get; set; } 
-        
-        
+        public List<Review> Reviews { get; set; }
+
+
 
 
 
     }
 }
-
-           
-
-       
-   
-
-        
-    
-
