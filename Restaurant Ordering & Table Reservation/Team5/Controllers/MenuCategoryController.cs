@@ -33,16 +33,15 @@ namespace Team5.Controllers
         [HttpPut("UpdateMenuCategory/{id}")]
         public IActionResult UpdateMenuCategory(int id,MenuCategory menuCategory)
         {
-            if (id != menuCategory.MenuCategoryId)
-            {
-                return BadRequest("Menu Category ID mismatch.");
-            }
             var existingMenuCategory = context.MenuCategories.Find(id);
             if (existingMenuCategory != null)
             {
-                context.MenuCategories.Update(menuCategory);
+                // Update the tracked entity in place (avoids a duplicate-tracking conflict).
+                existingMenuCategory.MenuCategoryName = menuCategory.MenuCategoryName;
+                existingMenuCategory.MenuCategoryDescription = menuCategory.MenuCategoryDescription;
+                existingMenuCategory.DisplayOrder = menuCategory.DisplayOrder;
                 context.SaveChanges();
-                return Ok(menuCategory);
+                return Ok(existingMenuCategory);
             }
             return NotFound("Menu Category not found.");
         }
