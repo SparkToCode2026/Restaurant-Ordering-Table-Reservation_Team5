@@ -63,6 +63,85 @@
      </table>
    </div></div>
  </main>
- 
+  <!-- ===== a little JavaScript for this page ===== -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="js/app.js"></script>
+ <script>
+   requireAdmin();
+
+   let list = [];
+   let editId = null;
+
+   // Work out the stock status from the numbers.
+   function stockStatus(qty, reorder) {
+     if (qty <= 0) return badge("Out of stock");
+     if (qty <= reorder) return badge("Low stock");
+     return badge("In stock");
+   }
+
+   async function load() {
+     list = await api("GET", EP.ingredients);
+     document.getElementById("rows").innerHTML = list.map(i => `
+       <tr>
+         <td>${i.ingredientId}</td>
+         <td>${esc(i.ingredientName)}</td>
+         <td>${i.quantityInStock}</td>
+         <td>${esc(i.unitOfMeasure)}</td>
+         <td>${i.reorderLevel}</td>
+         <td>${stockStatus(i.quantityInStock, i.reorderLevel)}</td>
+         <td>
+           <button class="btn btn-sm btn-outline-primary" onclick="openEdit(${i.ingredientId})">Edit</button>
+           <button class="btn btn-sm btn-outline-danger" onclick="del(${i.ingredientId})">Delete</button>
+         </td>
+       </tr>`).join("");
+   }
+
+   function openAdd() {
+     editId = null;
+     document.getElementById("formTitle").textContent = "Add ingredient";
+     document.getElementById("fName").value = "";
+     document.getElementById("fUnit").value = "";
+     document.getElementById("fQty").value = "";
+     document.getElementById("fReorder").value = "";
+     document.getElementById("formCard").classList.remove("d-none");
+   }
+
+   function openEdit(id) {
+     const i = list.find(x => x.ingredientId === id);
+     editId = id;
+     document.getElementById("formTitle").textContent = "Edit ingredient";
+     document.getElementById("fName").value = i.ingredientName;
+     document.getElementById("fUnit").value = i.unitOfMeasure;
+     document.getElementById("fQty").value = i.quantityInStock;
+     document.getElementById("fReorder").value = i.reorderLevel;
+     document.getElementById("formCard").classList.remove("d-none");
+   }
+
+   function closeForm() { document.getElementById("formCard").classList.add("d-none"); }
+
+   async function save(event) {
+     event.preventDefault();
+     const data = {
+       ingredientName: document.getElementById("fName").value,
+       unitOfMeasure: document.getElementById("fUnit").value,
+       quantityInStock: Number(document.getElementById("fQty").value),
+       reorderLevel: Number(document.getElementById("fReorder").value)
+     };
+     try {
+       if (editId) { data.ingredientId = editId; await api("PUT", EP.ingredientUpdate(editId), data); }
+       else        { await api("POST", EP.ingredients, data); }
+       closeForm();
+       load();
+     } catch (err) { alert(err.message); }
+   }
+
+   async function del(id) {
+     if (!confirm("Delete ingredient #" + id + "?")) return;
+     try { await api("DELETE", EP.ingredientDelete(id)); load(); }
+     catch (err) { alert(err.message); }
+   }
+
+   load();
+ </script>
 </body>
 </html>
