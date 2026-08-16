@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>spoons admin · Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- ============ ADMIN NAVBAR ============ -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="admin-dashboard.html"><img src="img/logo.svg" alt="Spoons Logo" height="30"> spoons admin</a>
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-users.html">Users</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-categories.html">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-menu-items.html">Menu Items</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-tables.html">Tables</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-reservations.html">Reservations</a></li>
+          <li class="nav-item"><a class="nav-link active" href="admin-orders.html">Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-payments.html">Payments</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-reviews.html">Reviews</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-ingredients.html">Ingredients</a></li>
+        </ul>
+        <button class="btn btn-outline-light" onclick="logout()">Sign out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ PAGE CONTENT ============ -->
+  <main class="container-fluid p-4">
+    <h3 class="fw-bold mb-3">Orders</h3>
+
+    <div class="card shadow-sm"><div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Date</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="7">Loading…</td></tr></tbody>
+      </table>
+    </div></div>
+
+    <div id="details" class="mt-3"></div>
+  </main>
+
+  <!-- ===== a little JavaScript for this page ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    requireAdmin();
+
+    let dishes = [];
+
+    async function load() {
+      const rows = document.getElementById("rows");
+      try {
+        const users = await api("GET", EP.users);
+        dishes = await api("GET", EP.items);
+        const orders = await api("GET", EP.orders);
+        const userName = id => (users.find(u => u.userId === id) || {}).userName || ("#" + id);
+        const statuses = ["Pending", "Preparing", "Ready", "Completed", "Cancelled"];
+
+        rows.innerHTML = orders.map(o => `
+          <tr>
+            <td>#${o.orderId}</td>
+            <td>${esc(userName(o.userId))}</td>
+            <td>${esc(o.orderType)}</td>
+            <td>${new Date(o.orderDate).toLocaleString()}</td>
+            <td>${money(o.totalAmount)}</td>
+            <td>
+              <select class="form-select form-select-sm" onchange="setStatus(${o.orderId}, this.value)">
+                ${statuses.map(s => `<option ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary" onclick="viewItems(${o.orderId})">Items</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="del(${o.orderId})">Delete</button>
+            </td>
+          </tr>`).join("");
+      } catch (err) {
+        rows.innerHTML = `<tr><td colspan="7" class="text-danger">${esc(err.message)}</td></tr>`;
+      }
+    }
+
+    async function setStatus(id, status) {
+      try { await api("PATCH", EP.orderStatus(id, status)); }
+      catch (err) { alert(err.message); }
+    }
+
+    // Show the items of one order.
+    async function viewItems(orderId) {
+      const box = document.getElementById("details");
+      box.innerHTML = "Loading…";
+      try {
+        const items = await api("GET", EP.orderItemsByOrder(orderId));
+        const nameOf = id => (dishes.find(d => d.menuItemId === id) || {}).menuItemName || ("#" + id);
+        box.innerHTML = `
+          <div class="card shadow-sm"><div class="card-body">
+            <h6 class="fw-bold">Order #${orderId} items</h6>
+            <table class="table mb-0">
+              <thead><tr><th>Dish</th><th>Qty</th><th>Unit</th><th>Subtotal</th></tr></thead>
+              <tbody>${items.map(i => `<tr><td>${esc(nameOf(i.menuItemId))}</td>
+                <td>${i.quantity}</td><td>${money(i.unitPrice)}</td><td>${money(i.subtotal)}</td></tr>`).join("")}</tbody>
+            </table>
+          </div></div>`;
+      } catch (err) { box.innerHTML = `<p class="text-danger">${esc(err.message)}</p>`; }
+    }
+
+    async function del(id) {
+      if (!confirm("Delete order #" + id + "?")) return;
+      try { await api("DELETE", EP.orderDelete(id)); load(); }
+      catch (err) { alert(err.message); }
+    }
+
+    load();
+  </script>
+</body>
+</html>
