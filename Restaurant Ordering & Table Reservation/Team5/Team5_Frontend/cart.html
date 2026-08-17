@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>spoons · Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-danger" href="index.html"><img src="img/logo.svg" alt="Spoons Logo" height="30"> spoons</a>
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+          <li class="nav-item"><a class="nav-link" href="reserve.html">Reserve</a></li>
+          <li class="nav-item"><a class="nav-link" href="orders.html">My Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="reservations.html">My Reservations</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a href="cart.html" class="btn btn-danger"><i class="bi bi-cart3"></i> Cart <span id="cartCount" class="badge text-bg-light text-dark">0</span></a>
+          <a href="profile.html" class="btn btn-outline-secondary"><i class="bi bi-person"></i></a>
+          <button class="btn btn-outline-secondary" onclick="logout()">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ PAGE CONTENT ============ -->
+  <main class="container py-4">
+    <h3 class="fw-bold mb-3">Your cart</h3>
+    <div class="row g-4">
+
+      <!-- Left: the list of items (filled by the script) -->
+      <div class="col-lg-7">
+        <div class="card shadow-sm"><div class="card-body" id="cartItems">Loading…</div></div>
+      </div>
+
+      <!-- Right: order summary (plain HTML form) -->
+      <div class="col-lg-5">
+        <div class="card shadow-sm"><div class="card-body">
+          <h6 class="fw-bold mb-3">Order summary</h6>
+          <div class="d-flex justify-content-between"><span class="text-secondary">Subtotal</span><span id="subtotal">$0.00</span></div>
+          <div class="d-flex justify-content-between"><span class="text-secondary">Tax (5%)</span><span id="tax">$0.00</span></div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span id="total" class="text-danger">$0.00</span></div>
+
+          <label class="form-label mt-3">Order type</label>
+          <select id="orderType" class="form-select mb-3">
+            <option value="DineIn">Dine-in</option>
+            <option value="Takeaway">Takeaway</option>
+          </select>
+
+          <label class="form-label">Table</label>
+          <select id="table" class="form-select mb-3"><option>Loading…</option></select>
+
+          <label class="form-label">Payment method</label>
+          <select id="payment" class="form-select mb-3">
+            <option value="2">Card</option>
+            <option value="1">Cash</option>
+            <option value="3">Online</option>
+          </select>
+
+          <button id="payBtn" class="btn btn-danger btn-lg w-100" onclick="placeOrder()">Place order &amp; pay</button>
+          <p class="small text-secondary text-center mt-2 mb-0"><i class="bi bi-shield-lock"></i> No real card data is stored.</p>
+        </div></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== a little JavaScript for this page ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    requireLogin();
+
+    // Draw the cart items and the totals.
+    function drawCart() {
+      const box = document.getElementById("cartItems");
+      const items = Cart.items();
+
+      if (items.length === 0) {
+        box.innerHTML = '<p class="text-secondary mb-0">Your cart is empty. <a href="menu.html">Browse the menu</a>.</p>';
+      } else {
+        box.innerHTML = items.map(x => `
+          <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+            <div><b>${esc(x.name)}</b><div class="small text-secondary">${money(x.price)} each</div></div>
+            <div class="d-flex align-items-center gap-2">
+              <input type="number" min="1" value="${x.qty}" class="form-control form-control-sm" style="width:70px"
+                     onchange="Cart.setQty(${x.id}, Number(this.value)); drawCart()">
+              <b style="width:70px; text-align:right">${money(x.qty * x.price)}</b>
+              <button class="btn btn-sm btn-link text-danger" onclick="Cart.remove(${x.id}); drawCart()"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>`).join("");
+      }
+
+      const sub = Cart.total(), tax = sub * 0.05, total = sub + tax;
+      document.getElementById("subtotal").textContent = money(sub);
+      document.getElementById("tax").textContent = money(tax);
+      document.getElementById("total").textContent = money(total);
+      document.getElementById("cartCount").textContent = Cart.count();
+    }
+
+    // Fill the table dropdown.
+    async function loadTables() {
+      try {
+        const tables = await api("GET", EP.tables);
+        document.getElementById("table").innerHTML = tables
+          .filter(t => t.isActive)
+          .map(t => `<option value="${t.tableId}">${esc(t.tableNumber)} — ${esc(t.location)}</option>`).join("");
+      } catch (err) { /* leave as-is */ }
+    }
+
+    // Create the order, its items, and the payment — one after another.
+    async function placeOrder() {
+      const items = Cart.items();
+      if (items.length === 0) { alert("Your cart is empty."); return; }
+
+      const total = Cart.total() * 1.05;
+      const btn = document.getElementById("payBtn");
+      btn.disabled = true; btn.textContent = "Processing…";
+
+      try {
+        // 1) create the order (the server sends back the new order's id number)
+        const orderId = await api("POST", EP.orderCreate, {
+          orderType:   document.getElementById("orderType").value,
+          status:      "Pending",
+          orderDate:   new Date().toISOString(),
+          totalAmount: Number(total.toFixed(2)),
+          userId:      me().userId,
+          tableId:     Number(document.getElementById("table").value)
+        });
+
+        // 2) add each cart item to that order
+        for (const x of items) {
+          await api("POST", EP.orderItems, {
+            quantity: x.qty, unitPrice: x.price, subtotal: Number((x.qty * x.price).toFixed(2)),
+            orderId: Number(orderId), menuItemId: x.id
+          });
+        }
+
+        // 3) record the payment (the server emails a receipt)
+        await api("POST", EP.paymentCreate, {
+          amount: Number(total.toFixed(2)),
+          paymentMethod: Number(document.getElementById("payment").value),
+          paymentStatus: "Paid",
+          paymentDate: new Date().toISOString(),
+          transactionRef: "TXN-" + Date.now(),
+          orderId: Number(orderId)
+        });
+
+        Cart.clear();
+        alert("Order placed and paid! A receipt has been emailed to you.");
+        location.href = "orders.html";
+      } catch (err) {
+        alert("Payment failed: " + err.message);
+        btn.disabled = false; btn.textContent = "Place order & pay";
+      }
+    }
+
+    drawCart();
+    loadTables();
+  </script>
+</body>
+</html>
