@@ -13,7 +13,7 @@
    ============================================================ */
 
 /* 1) Where is the backend?  Change the port if yours is different. */
-const API_BASE = "https://localhost:7095";
+const API_BASE = "http://localhost:5073";
 
 /* 2) The address of every backend action we use.
       (The controllers don't all follow the same pattern, so we
